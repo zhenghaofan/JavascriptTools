@@ -7,3 +7,4 @@ console.log(arr);
 console.log(myvar);
 console.log("aaa");
 console.log("bbb");
+console.log("ccc");
