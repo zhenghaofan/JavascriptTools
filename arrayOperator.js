@@ -5,6 +5,3 @@ arr.push(2);
 var myvar = arr.push(3);
 console.log(arr);
 console.log(myvar);
-console.log("aaa");
-console.log("bbb");
-console.log("ccc");
