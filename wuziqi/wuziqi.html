@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>五子棋游戏</title>
+</head>
+<body>
+	<div id="content"></div>
+	<!-- <canvas width="400" id="canvas" onmousedown="play(event)" height="400"></canvas> -->
+	<button id="restart" style="position:absolute;left:10px;top:430px;width:90px;height:30px" onclick="location.reload()">重新开始</button>
+<script>
+
+	function Create(mode){
+		this.mode = mode ;// canvas or table
+		this.isWhite = true;
+		this.finished = false;
+		this.context = null;
+		this.chessData = [];
+		this.imgWhite = this.createChess("./white.png");
+		this.imgBlack = this.createChess("./black.png");
+		this.div = document.getElementById("content");
+	}
+
+	Create.prototype.initData = function(){
+		for (var x = 0; x < 15; x++) {
+            this.chessData[x] = new Array(15);
+            for (var y = 0; y < 15; y++) {
+                this.chessData[x][y] = 0;
+            }
+        }
+	}
+
+	Create.prototype.initBg = function(){
+		if(this.mode === "canvas"){			
+			this.createCanvas();
+			var myCanvas = document.getElementsByTagName('canvas')[0];
+			this.context = myCanvas.getContext("2d");
+			this.initCanvasBg(this.context);			 
+	        }else{
+	        	//table mode or other implement
+	        }
+	}
+
+	Create.prototype.createCanvas = function(){
+		var canvas = document.createElement("canvas");
+		canvas.width = 400;
+		canvas.height = 400;
+		canvas.addEventListener('mousedown',this.play.bind(this));
+		this.div.appendChild(canvas);
+
+	}
+
+	Create.prototype.initCanvasBg = function(){	
+		for (var i = 0; i <= 400; i += 40) {
+	                this.context.beginPath();
+	                this.context.moveTo(0, i);
+	                this.context.lineTo(400, i);
+	                this.context.closePath();
+	                this.context.stroke(); 
+	                this.context.beginPath();
+	                this.context.moveTo(i, 0);
+	                this.context.lineTo(i, 400);
+	                this.context.closePath();
+	                this.context.stroke();
+	            }
+	}
+
+	Create.prototype.createChess = function(url){
+		var img = new Image();
+		img.src = url;
+		return img;
+	}
+
+	Create.prototype.drawChess = function(chess, x, y){
+		if (this.finished === true) {
+                alert("游戏结束");
+                return;
+            }
+            if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+                if (chess == 1) {
+                    this.context.drawImage(this.imgWhite, x * 40 + 20, y * 40 + 20);
+                    this.chessData[x][y] = 1;
+                }
+                else {
+                    this.context.drawImage(this.imgBlack, x * 40 + 20, y * 40 + 20);
+                    this.chessData[x][y] = 2;
+                }
+                this.judge(x, y, chess);
+            }
+	}
+
+	Create.prototype.play = function(){
+
+		 	var x = parseInt((event.clientX - 20) / 40);
+            var y = parseInt((event.clientY - 20) / 40);
+ 			// console.log(this.chessData);
+            if (this.chessData[x][y] != 0) {
+                alert("你不能在这个位置下棋");
+                return;
+            }
+ 
+            if (this.isWhite) {
+                this.isWhite = false;
+                this.drawChess(1, x, y);
+            }
+            else {
+                this.isWhite = true;
+                this.drawChess(2, x, y);
+            }
+	}
+
+	Create.prototype.judge = function(x, y, chess){
+			var count1 = 0;
+            var count2 = 0;
+            var count3 = 0;
+            var count4 = 0;
+ 
+            //左右判断
+            for (var i = x; i >= 0; i--) {
+                if (this.chessData[i][y] != chess) {
+                    break;
+                }
+                count1++;
+            }
+            for (var i = x + 1; i < 15; i++) {
+                if (this.chessData[i][y] != chess) {
+                    break;
+                }
+                count1++;
+            }
+            //上下判断
+            for (var i = y; i >= 0; i--) {
+                if (this.chessData[x][i] != chess) {
+                    break;
+                }
+                count2++;
+            }
+            for (var i = y + 1; i < 15; i++) {
+                if (this.chessData[x][i] != chess) {
+                    break;
+                }
+                count2++;
+            }
+            //左上右下判断
+            for (var i = x, j = y; i >= 0, j >= 0; i--, j--) {
+                if (this.chessData[i][j] != chess) {
+                    break;
+                }
+                count3++;
+            }
+            for (var i = x + 1, j = y + 1; i < 15, j < 15; i++, j++) {
+                if (this.chessData[i][j] != chess) {
+                    break;
+                }
+                count3++;
+            }
+            //右上左下判断
+            for (var i = x, j = y; i >= 0, j < 15; i--, j++) {
+                if (this.chessData[i][j] != chess) {
+                    break;
+                }
+                count4++;
+            }
+            for (var i = x + 1, j = y - 1; i < 15, j >= 0; i++, j--) {
+                if (this.chessData[i][j] != chess) {
+                    break;
+                }
+                count4++;
+            }
+ 
+            if (count1 >= 5 || count2 >= 5 || count3 >= 5 || count4 >= 5) {
+                if (chess == 1) {
+                    alert("白棋赢了");
+                }
+                else {
+                    alert("黑棋赢了");
+                }
+                this.finished = true;
+            }
+	}
+
+	
+	Create.prototype.init = function(){
+		this.initData();
+		this.initBg();
+	}
+
+	document.onload = new Create("canvas").init();
+
+	
+</script>
+</body>
+</html>
