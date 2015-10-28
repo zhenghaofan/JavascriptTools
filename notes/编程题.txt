@@ -1,0 +1,32 @@
+用正则把yya yyb yyc变成yya5 yyb6 yyc7？
+
+　　正则用的不多，思想是对的 用replace方法，但是第二个需要用function，得出以下方法：其实就是考replace方法的第二个参数，function。
+
+var j=5;
+str.replace(/\w+/g,function(m){
+
+　　return m+j++;
+
+});
+
+
+arr = [1,2,3];
+arr.slice(1,2,3) ;//[2]
+arr.splice(1,2,3,4) //[2,3]
+
+判断对象是否为数组：
+不能使用typeof，typeof总是返回object;
+①IE9以上使用isArray(),
+②使用Object.prototype.toString.apply(value) === '[Object Array]'
+③typeof value == 'object' && value.constructor === Array
+④value instanceof Array
+后两者不支持跨窗口
+经常使用typeof检查变量是否为undefined
+
+当判断成功后，如果要在对象数组上使用数组方法，必须用
+Array.prototype.slice.call(aa,1,2...)
+将对象数组转为数组：
+一般用Array.prototype.slice.call(object),但不兼容某些IE版本
+
+s = "[object Array]"
+提取出Array: s.match(/\[object (.*?)]\/)[1]

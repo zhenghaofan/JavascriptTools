@@ -1,0 +1,93 @@
+HTTP通信：ajax,comet(由web服务器发起，异步发送消息到客户端),http流
+
+浏览器在XMLHttpRequest对象上定义了HTTP的API
+
+XHR1：
+首先需要实例化这个XHR对象：
+var req = new XMLHttpRequest();
+兼容性代码，兼容IE5，6：
+if(window.ActiveXObject){
+	req = new Active XObject('Microsoft.XMLHTTP');
+}else if(window.XMLHttpRequest){
+	req = new XMLHttpRequest()
+}
+
+之后发起一个HTTP请求，调用open():
+request.open("GET","data.json");//第一个参数为方法，有get,post,delete,head,options,put 第二个参数为URL，跨域的请求一般会出错，当服务器明确允许跨域时，XHR2会允许
+
+设置请求头，例如：
+request.setRequestHeader("Content-Type","text/plain");
+
+向服务器发送，使用send():
+request.send(null);//开始启动网络
+
+取得响应：一个完整的HTTP响应由状态码，响应头集合与响应主体组成，在XHR对象中都有
+status,statusText以数字和文本形式返回状态码，例如200和"OK"
+使用getResponseHeader()查询响应头，XHR会自动处理cookie，自动过滤掉cookie头
+响应主体从responseText,responseXML得到文本、文档形式。
+
+为了在响应成功时得到通知，必须监听XHR上的readystatechange事件：
+readyState是一个整数，0为open未调用，1为open已调用，2为已经接收到响应头，3为接收到响应主体，4为响应完成，理论上每次readyState发生改变都会触发readystatechange事件，但有时不触发；当readyState变为4时，readystatechange必然触发
+
+通过request.getResponseHeader('')可以获取响应头信息
+
+ request.onreadystatechange=function() {  
+            if (request.readyState==4 request.status == 200) {  
+                result.innerHTML = request.responseText;  
+            }  
+            else{  
+                result.innerHTML = "正在查询，请稍等";  
+            }                 
+        }  
+
+XHR2：
+新版本的XMLHttpRequest对象，针对老版本的缺点，做出了大幅改进。
+　　* 可以设置HTTP请求的时限。
+　　* 可以使用FormData对象管理表单数据。
+　　* 可以上传文件。
+　　* 可以请求不同域名下的数据（跨域请求）。
+　　* 可以获取服务器端的二进制数据。
+　　* 可以获得数据传输的进度信息。
+当调用request.send()时触发单个loadstart事件，当加载服务器响应时，XHR会发生progress事件，响应完成时触发load事件，出现http响应失败时还有timeout事件；表单数据处理中定义了FormData类型，可以通过new FormData().append("key","value")序列化表单数据
+可以在服务器加上代码支持跨域，IE10以下不支持：
+header('Access-Control-Allow-Origin:*');//可以设定特定的域
+header('Access-Control-Allow-Methods:POST,GET')
+
+JSONP:P代表填充padding，不支持post请求
+客户端中首先定义一个函数用于处理返回数据，接着通过动态生成JavaScript标签，这个标签的src属性设置远程调用数据的地址再加上客户端处理返回数据的函数的名称，当服务器获取到此函数名时，可以通过拼接字符串把函数名和数据拼接到返回结果中，于是就实现了数据的跨域调用
+A域名去声明，B域名去调用
+例子：
+客户端：
+<script>
+	var handleFunc = function(data){
+		alert(data.aaa);
+	}
+	var url = "http://zhenghaofan.org/returnJson.php?callback=handleFunc";
+	var newScript = document.createElement('script');
+	newScript.src = url;
+	document.getElementsByTagName('head')[0].appendChild(newScript);
+</script>
+服务器端：
+返回数据为：
+handleFunc(
+	{"aaa":"bbb"}
+);
+使用jQuery：
+$(document).ready(function(){
+	$.ajax({
+		type:"get",
+		url: "http://zhenghaofan.org/returnJson.php",
+		dataType: "jsonp",
+		jsonp: "callback",
+		jsonpCallback: "handleFunc",
+		success: function(data){
+			alert(data.aaa);
+		}
+	})
+}		
+);
+
+解决跨域问题：
+1.JSONP
+2.XHR2
+3.服务器代理

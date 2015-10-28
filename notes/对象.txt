@@ -1,0 +1,225 @@
+对象属性的特点：可写（可赋值），可枚举，可配置（可以删除或修改该属性）
+
+Object.keys方法和Object.getOwnPropertyNames方法很相似，一般用来遍历对象的属性。它们的参数都是一个对象，都返回一个数组，该数组的成员都是对象自身的（而不是继承的）所有属性名。它们的区别在于，Object.keys方法只返回可枚举的属性（关于可枚举性的详细解释见后文），Object.getOwnPropertyNames方法还返回不可枚举的属性名。
+如：
+var o = {
+    p1: 123,
+    p2: 456
+}; 
+
+Object.keys(o)// ["p1", "p2"]
+Object.getOwnPropertyNames(o)// ["p1", "p2"]
+Object.getOwnPropertyNames方法返回直接定义在某个对象上面的全部属性的名称， 而不管该属性是否可枚举。
+一般情况下，几乎总是使用Object.keys方法，遍历数组的属性。
+
+Object中的方法：
+1）对象属性模型的相关方法
+
+Object.getOwnPropertyDescriptor()：获取某个属性的attributes对象。
+Object.defineProperty()：通过attributes对象，定义某个属性。
+Object.defineProperties()：通过attributes对象，定义多个属性。
+Object.getOwnPropertyNames()：返回直接定义在某个对象上面的全部属性的名称。
+（2）控制对象状态的方法
+
+Object.preventExtensions()：防止对象扩展。
+Object.isExtensible()：判断对象是否可扩展。
+Object.seal()：禁止对象配置。
+Object.isSealed()：判断一个对象是否可配置。
+Object.freeze()：冻结一个对象。
+Object.isFrozen()：判断一个对象是否被冻结。
+（3）原型链相关方法
+
+Object.create()：生成一个新对象，并该对象的原型。
+Object.getPrototypeOf()：获取对象的Prototype对象。
+
+Object实例的方法：
+valueOf()：返回当前对象对应的值。
+valueOf方法的主要用途是，JavaScript自动类型转换时会默认调用这个方法
+toString()：返回当前对象对应的字符串形式。
+toLocalString()：返回当前对象对应的本地字符串形式。
+hasOwnProperty()：判断某个属性是否为当前对象自身的属性，还是继承自原型对象的属性。
+isPrototypeOf()：判断当前对象是否为另一个对象的原型。
+propertyIsEnumerable()：判断某个属性是否可枚举。
+
+Object.defineProperty(object, propertyName, attributesObject)
+Object.defineProperty方法接受三个参数，第一个是属性所在的对象，第二个是属性名（它应该是一个字符串），第三个是属性的描述对象。比如，新建一个o对象，并定义它的p属性，可以这样写：
+var o = Object.defineProperty({}, "p", {
+        value: 123,
+        writable: false,
+        enumerable: true,
+        configurable: false
+});
+
+o.p
+// 123
+
+o.p = 246;
+o.p
+// 123
+
+如果一个属性的enumerable为false，下面三个操作不会取到该属性。
+
+for..in循环
+Object.keys方法
+JSON.stringify方法
+
+三类对象：内置对象（ECMAScript定义的数组、函数）、宿主对象（JavaScript解释器所嵌入的宿主环境定义的，客户端表示网页结构的html element对象均是宿主对象）、自定义对象
+
+
+
+对象的特性：
+对象的原型指向另一个对象，本对象的属性继承自它的原型对象；
+对象的类是一个标识对象类型的字符串；
+对象的扩展标记知名是否可以向该对象添加新属性
+
+每一个对象都有原型对象继承属性，Object.prototype表示对原型对象的引用
+
+创建对象可用new Object(); Object.create()//第一个参数为这个对象的原型
+所有原型对象都包含一个constructor的属性，这个属性指向Object()的构造函数， 因此constructor.prototype才是对象的真正原型
+
+由于原始类型的值不是对象，所以不能使用instanceof运算符判断类型。
+
+"" instanceof String // false
+1 instanceof Number // false
+
+避免访问不存在对象的属性而报错的方法：
+var len = book.title.length;//book.title是undefined
+
+1.
+var len = "";
+if(book){
+	if(book.title){
+		len = book.title.length
+	}	
+}
+2.
+var len = book && book.title && book.title.length;
+
+检查属性：通过in或hasOwnProperty(),后者检查是否是自有属性。为了判断一个对象是否包含自定义属性而不是原型链上的属性， 我们需要使用继承自 Object.prototype 的 hasOwnProperty 方法。
+
+注意: 通过判断一个属性是否 undefined 是不够的。 因为一个属性可能确实存在，只不过它的值被设置为 undefined。
+hasOwnProperty 是 JavaScript 中唯一一个处理属性但是不查找原型链的函数。
+JavaScript 不会保护 hasOwnProperty 被非法占用，因此如果一个对象碰巧存在这个属性， 就需要使用外部的 hasOwnProperty 函数来获取正确的结果。
+
+var foo = {
+    hasOwnProperty: function() {
+        return false;
+    },
+    bar: 'Here be dragons'
+};
+
+foo.hasOwnProperty('bar'); // 总是返回 false
+
+// 使用其它对象的 hasOwnProperty，并将其上下文设置为foo
+({}).hasOwnProperty.call(foo, 'bar'); // true
+检查原型：isPrototypeOf
+改变属性：使用Object.defineProperty()
+获得对象的类名：通过toString()方法
+默认的toString()返回值为：[object className]，所以获得类名的过程可以通过调用对象的toString(),再返回第8个到倒数第二个位置之间的字符
+定义一个方法获取对象的类名：
+function getClassName(o){
+	if(o===null) return "Null";
+	if(o===undefined) return "Undefined";
+	return Object.prototype.toString.call(o).slice(8,-1);//获取类名
+}
+
+对象序列化：
+JSON.stringify()将对象转为字符串，会调用toJSON()；JSON.parse()还原JavaScript对象，通过JSON.parse对象转换出的是原对象的深拷贝(递归拷贝)
+
+通过new操作符构建一个对象，一般经过四步：
+  A.创建一个新对象
+  B.将构造函数的作用域赋给新对象（所以this就指向了这个新对象）
+  C.执行构造函数中的代码
+  D.返回这个新对象
+
+ 如果忘了使用new命令，构造函数就变成了普通函数，并不会生成实例对象。而且由于下面会说到的原因，this这时代表全局对象，将造成一些意想不到的结果。
+
+var Vehicle = function (){
+  this.price = 1000;
+};
+
+var v = Vehicle();
+v.price
+// Uncaught TypeError: Cannot read property 'price' of undefined
+
+price
+// 1000
+
+在构造函数内部判断是否使用new命令，如果发现没有使用，则直接返回一个实例对象。
+
+function Fubar(foo, bar){
+  if (!(this instanceof Fubar)) {
+    return new Fubar(foo, bar);
+  }
+
+  this._foo = foo;
+  this._bar = bar;
+}
+
+Fubar(1, 2)._foo // 1
+(new Fubar(1, 2))._foo // 1
+上面代码中的构造函数，不管加不加new命令，都会得到同样的结果。
+
+
+JavaScript类：基于原型继承实现
+使用构造函数定义一个类：
+function Range(from, to){
+	this.from = from;
+	this.to = to;
+}
+Range.prototype = {
+	constructor: Range;//显式添加构造函数
+	includes:function(x){
+		return this.from <= x && x <= this.to;
+	}
+}//使用自身的新对象重写预定义的prototype，所以不包含constructor，可以在原型中显式定义constructor
+创建对象：
+var r = new Range(1,3);
+r.includes(2);//true
+
+任何JavaScript函数都可以用作构造函数，每个构造函数都拥有一个prototype属性，这个属性的值是一个对象，这个对象包含一个不可枚举的属性constructor,constructor为对象提供了类，constructor均指代他们的构造函数，也就是：Object.prototype指向原型对象，而Object.prototype.constructor又指向Object()构造函数；__proto__指向它基于的原型对象，是系统自动创建的：
+var F = function(){};
+var p = F.prototype;//p为F的原型，p拥有constructor，这个constructor指向F
+var c = p.constructor;
+c === F // true
+var o = new F();
+o.__proto__ === p; //true,
+F.__proto__ === Funciton.prototype;//true
+o.construtor === F;//true;
+o没有prototype
+
+__proto__:每个对象都是基于原型对象创建的，每个对象中都有__proto__属性，这个属性指向的就是它基于的原型对象。__proto__属性是系统（浏览器）自动给创建的，在对象被创建的时候自动指向基于的原型对象。
+
+prototype:只有构造函数对象才有prototype属性，构造函数的作用是创建对象，创建对象的时候，它要知道这个对象基于哪个原型来创建，这个prototype指向的就是这个原型。prototype属性也是系统（浏览器）给创建的，并指向创建对象时基于的原型。
+注意不是构造函数本身基于的原型，本身基于的原型都是Function.prototype。
+
+constructor:构造函数对象的prototype属性会指向一个原型对象，那么这个原型对象中的constructor属性指向的就是这个构造函数。
+
+继承的实现：
+依靠原形链实现：
+基本模式：var AA = function(){
+		this.bb = true;
+           }
+AA.prototype.getBB = function(){
+		return this.bb;
+           }
+          CC.prototype = new AA();
+          var cc = new CC();
+          cc.getBB();  
+借用构造函数继承：
+        var AA = function(gg){
+				this.bb = true;
+                this.gg = gg;
+           }
+        var CC = function(){
+                AA.call(this,"abc");   
+           }
+	var cc = new CC();
+        cc.gg//"abc"
+组合继承：两种复合
+
+若在函数中新建对象，当函数返回时，该对象会被销毁
+
+当原型属性用来创建原型链时，可以把任何类型的值赋给它（prototype）。 然而将原子类型赋给 prototype 的操作将会被忽略：
+function Foo() {}
+Foo.prototype = 1; // 无效

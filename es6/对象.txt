@@ -1,0 +1,149 @@
+ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
+function f(x, y) {
+  return {x, y};
+}
+
+var o = {
+  method() {
+    return "Hello!";
+  }
+};
+
+// 等同于
+
+var o = {
+  method: function() {
+    return "Hello!";
+  }
+};
+
+Object.is()
+Object.is用来比较两个值是否严格相等。它与严格比较运算符（===）的行为基本一致。
+
+ES5可以通过下面的代码，部署Object.is。
+
+Object.defineProperty(Object, 'is', {
+  value: function(x, y) {
+    if (x === y) {
+      // 针对+0 不等于 -0的情况
+      return x !== 0 || 1 / x === 1 / y;
+    }
+    // 针对NaN的情况
+    return x !== x && y !== y;
+  },
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
+
+Object.assign方法用来将源对象（source）的所有可枚举属性，复制到目标对象（target）。它至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
+
+var target = { a: 1 };
+
+var source1 = { b: 2 };
+var source2 = { c: 3 };
+
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+
+注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
+
+var target = { a: 1, b: 1 };
+
+var source1 = { b: 2, c: 2 };
+var source2 = { c: 3 };
+
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+
+对于嵌套的对象，Object.assign的处理方法是替换，而不是添加。
+
+var target = { a: { b: 'c', d: 'e' } }
+var source = { a: { b: 'hello' } }
+Object.assign(target, source)
+// { a: { b: 'hello' } }
+
+Object.assign方法有很多用处。
+
+（1）为对象添加属性
+
+class Point {
+  constructor(x, y) {
+    Object.assign(this, {x, y});
+  }
+}
+上面方法通过assign方法，将x属性和y属性添加到Point类的对象实例。
+
+Object.assign(SomeClass.prototype, {
+  someMethod(arg1, arg2) {
+    ···
+  },
+  anotherMethod() {
+    ···
+  }
+});
+
+// 等同于下面的写法
+SomeClass.prototype.someMethod = function (arg1, arg2) {
+  ···
+};
+SomeClass.prototype.anotherMethod = function () {
+  ···
+};
+
+（4）合并多个对象
+
+将多个对象合并到某个对象。
+
+const merge =
+  (target, ...sources) => Object.assign(target, ...sources);
+如果希望合并后返回一个新对象，可以改写上面函数，对一个空对象合并。
+
+const merge =
+  (...sources) => Object.assign({}, ...sources); 	
+
+
+Object.observe()，Object.unobserve()
+Object.observe方法用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
+
+var user = {};
+Object.observe(user, function(changes){
+  changes.forEach(function(change) {
+    user.fullName = user.firstName+" "+user.lastName;
+  });
+});
+
+user.firstName = 'Michael';
+user.lastName = 'Jackson';
+user.fullName // 'Michael Jackson'
+上面代码中，Object.observer方法监听user对象。一旦该对象发生变化，就自动生成fullName属性。
+
+一般情况下，Object.observe方法接受两个参数，第一个参数是监听的对象，第二个函数是一个回调函数。一旦监听对象发生变化（比如新增或删除一个属性），就会触发这个回调函数。很明显，利用这个方法可以做很多事情，比如自动更新DOM。
+
+var div = $("#foo");
+
+Object.observe(user, function(changes){
+  changes.forEach(function(change) {
+    var fullName = user.firstName+" "+user.lastName;
+    div.text(fullName);
+  });
+});
+
+Object.observe方法目前共支持监听六种变化。
+
+add：添加属性
+update：属性值的变化
+delete：删除属性
+setPrototype：设置原型
+reconfigure：属性的attributes对象发生变化
+preventExtensions：对象被禁止扩展（当一个对象变得不可扩展时，也就不必再监听了）
+
+Object.observe方法还可以接受第三个参数，用来指定监听的事件种类。
+
+Object.observe(o, observer, ['delete']);
+上面的代码表示，只在发生delete事件时，才会调用回调函数。
+
+Object.unobserve方法用来取消监听。
+
+Object.unobserve(o, observer);
+注意，Object.observe和Object.unobserve这两个方法不属于ES6，而是属于ES7的一部分。

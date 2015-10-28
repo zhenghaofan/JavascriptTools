@@ -1,0 +1,121 @@
+JavaScript区分大小写，在HTML中设置事件处理程序时可将onclick属性写成“onClick”，但在JavaScript代码中必须使用小写的onclick
+特殊字符的unicode值：
+空格符 \u0020
+tab键  \u0009
+垂直制表符 \u000B
+...
+行结束符：
+换行符 \u000A   LF，通常表示为\n
+回车符 \u000D   CR，通常表示为\r
+行分隔符 \u2028
+段分隔符 \u2029
+在windows系统下，回车换行符号是"\r\n".但是在Linux系统下是"\n",Mac系统下则是"\r"
+
+数据类型分为两类：原始类型和对象类型
+原始类型：包括数字、字符串、布尔值、null、undefined；属于不可变类型
+对象类型：数组、函数，属于可变类型、引用类型
+在JavaScript中，只有null和undefined是无法拥有方法的值，即不能使用 .方法名
+
+JavaScript所有数字都用浮点数值表示，其算术运算在溢出、下溢出、被零整除不会报错，溢出时使用Infinity表示正不穷大，0/0的结果是NaN(非数字)
+NaN与任何值都不等，必须通过x!=x来判断，当且仅当x为NaN时返回true,或者使用isNaN()判断
+
+所有操作字符串的方法都返回新字符串，原字符串并没有发生改变；字符串可以当作只读数组，可以用方括号访问字符串中的单个字符
+
+全局对象：
+当JavaScript解释器启动时，它将创建一个新的全局对象，并定义一组初始属性：
+全局属性：undefined,NaN,Infinity...
+全局函数：isNaN(),parseInt(),eval()...
+构造函数：Date(),RegExp(),String(),Object(),Array()...
+全局对象：Math,JSON...
+
+typeof(null) //Object
+typeof(undefined) //undefined
+
+可在字符串直接使用方法，比如s.substring()，是因为当引用该方法时，JavaScript会将字符串值通过调用new String(s)的方式转为对象，这个对象继承了字符串的方法，一旦方法引用结束，这个新对象就会被销毁：
+var s="test";
+s.aaa=4; //创建一个临时对象，对其aaa属性赋值，随即销毁这个对象
+var t=s.aaa; //t为undefined
+存取字符串、数字、布尔值创建的临时对象称为包装对象，可通过new String(),new Number(),new Boolean()显式创建包装对象
+使用"=="将原始值跟包装对象视为相等，"==="视为不等
+var s="test";
+var S = new String(s);
+typeof(s) //"string"
+typeof(S) //"object"
+
+所有对象值的比较都是引用的比较，当且仅当引用同一个对象时它们才相等：
+var a=[];
+var b=a;
+b[0]=1;
+a[0] //1
+a===b //true
+
+如果想新创建一个相等的对象，必须显式复制每个属性跟元素，可以使用for遍历
+
+parseInt(),parseFloat()是全局函数，用法：
+parseInt("3sdfsdffds") //3
+parseInt("sdfsdf3") //NaN
+parseInt("11", 2) //3，表示将11当成二进制数转换
+
+将对象转为原始值：toString(),valueOf()
+数组调用toString()将返回一个所有元素以逗号分隔的字符串
+函数调用toString()将返回这个函数定义时的表示方式：
+(function(x){}).toString() //(function(x){})
+/^d+/g.toString() // "/^d+/g"
+
+类型转换：
+转换为字符串：
+'' + 10 === '10'; // true
+将一个值加上空字符串可以轻松转换为字符串类型。
+
+转换为数字：
++'10' === 10; // true
+使用一元的加号操作符，可以把字符串转换为数字。
+
+译者注：字符串转换为数字的常用方法：
++'010' === 10
+Number('010') === 10
+parseInt('010', 10) === 10  // 用来转换为整数
++'010.2' === 10.2
+Number('010.2') === 10.2
+parseInt('010.2', 10) === 10
+
+转换为布尔型：
+通过使用 否 操作符两次，可以把一个值转换为布尔型。
+!!'foo';   // true
+!!'';      // false
+!!'0';     // true
+!!'1';     // true
+!!'-1'     // true
+!!{};      // true
+!!true;    // true
+
+undefined：
+下面的情况会返回 undefined 值：
+访问未修改的全局变量 undefined。
+由于没有定义 return 表达式的函数隐式返回。
+return 表达式没有显式的返回任何内容。
+访问不存在的属性。
+函数参数没有被显式的传递值。
+任何被设置为 undefined 值的变量。
+处理 undefined 值的改变
+
+由于全局变量 undefined 只是保存了 undefined 类型实际值的副本， 因此对它赋新值不会改变类型 undefined 的值。
+
+然而，为了方便其它变量和 undefined 做比较，我们需要事先获取类型 undefined 的值。
+
+为了避免可能对 undefined 值的改变，一个常用的技巧是使用一个传递到匿名包装器的额外参数。 在调用时，这个参数不会获取任何值。
+
+var undefined = 123;
+(function(something, foo, undefined) {
+    // 局部作用域里的 undefined 变量重新获得了 `undefined` 值
+
+})('Hello World', 42);
+另外一种达到相同目的方法是在函数内使用变量声明。
+
+var undefined = 123;
+(function(something, foo) {
+    var undefined;
+    ...
+
+})('Hello World', 42);
+这里唯一的区别是，在压缩后并且函数内没有其它需要使用 var 声明变量的情况下，这个版本的代码会多出 4 个字节的代码。

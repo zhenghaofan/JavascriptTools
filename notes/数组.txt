@@ -1,0 +1,145 @@
+数组：
+
+创建数组: var arr = [];  var arr = new Array()
+var a1 = new Array();
+var a2 = new Array(1);
+var a3 = new Array('abc');
+var a4 = new Array([1]);
+var a5 = new Array(1,2);
+
+a1 // []
+a2 // [undefined × 1]
+a3 // ['abc']
+a4 // [Array[1]]
+a5 // [1, 2]
+
+如果不想创建实例，只是想单纯调用以下这些方法，可以写成 [].method.call(调用对象，参数) 的形式，或者 Array.prototype.method.call(调用对象，参数)的形式。
+
+var a = { a: 1 };
+
+[].push.call(a, 2);
+a
+// {a:1, 0:2, length: 1}
+
+[].push.call(a, [3]);
+a
+// {a:1, 0:2, 1:[3], length: 2}
+
+valueOf方法返回数组本身。
+
+var a = [1,2,3];
+
+a.valueOf()// [1,2,3]
+toString 方法返回数组的字符串形式。
+
+var a = [1,2,3];
+
+a.toString()// "1,2,3"
+
+添加元素：arr.push('aaa');arr.unshift()//在首部增加元素
+删除元素：arr.pop();arr.shift()
+将数组转字符串：arr.join('')或toString()
+concat()返回一个新数组，arr.concat([1,2])//返回[arr,1,2]
+
+slice方法返回指定位置的数组成员组成的新数组，原数组不变。它的第一个参数为起始位置（从0开始），第二个参数为终止位置（但该位置的元素本身不包括在内）。如果省略第二个参数，则一直返回到原数组的最后一个成员。
+arr.slice(0,3)返回前三个元素，arr.slice(3)返回除了前三个元素剩余构成的数组；slice(0)返回原数组
+
+var a = ["a","b","c"];
+
+a.slice(1,2) // ["b"]
+a.slice(1) // ["b", "c"]
+a.slice(0) // ["a","b","c"]
+a.slice(-2) // ["b", "c"]
+a.slice(4) // []
+a.slice(2, 6) // ["c"]
+a.slice(2, 1) // []
+上面代码表示，如果slice方法的参数是负数，则从尾部开始选择的成员个数；如果参数值大于数组成员的个数，或者第二个参数小于第一个参数，则返回空数组。
+
+slice方法的一个重要应用，是将类似数组的对象转为真正的数组。
+
+Array.prototype.slice.call({ 0: 'a', 1: 'b', length: 2 })
+// ['a', 'b']
+
+
+splice()在数组中插入或删除元素，它会修改调用的数组，返回被删除的数组：
+var a = [1,2,3,4];
+a.splice(2);//返回[3,4],a变为[1,2]
+第一个参数是删除的起始位置，第二个参数是被删除的元素个数。如果后面还有更多的参数，则表示这些就是要被插入数组的新元素。
+
+var a = ["a","b","c","d","e","f"];
+
+a.splice(4,2,1,2)
+// ["e", "f"]
+
+a
+// ["a", "b", "c", "d", 1, 2]
+上面代码除了删除成员，还插入了两个新成员。
+
+indexOf()返回元素位置，给定的参数为一个值
+
+[11,101].sort()
+// [101, 11]
+
+[10111,1101,111].sort()
+// [10111, 1101, 111]
+
+如果想让sort方法按照大小排序，可以传入一个函数作为参数，表示按照自定义方法进行排序。该函数本身又接受两个参数，表示进行比较的两个元素。如果返回值大于0，表示第一个元素排在第二个元素后面；其他情况下，都是第一个元素排在第二个元素前面。
+
+[10111,1101,111].sort(function (a,b){
+  return a-b;
+})
+// [111, 1101, 10111]
+
+
+传递参数为函数的函数：
+
+forEach()遍历每个元素，为每个元素调用函数，与for的区别在于无法break，forEach方法没有返回值。如果需要有返回值，一般使用map方法，如果只是单纯操作数据，一般使用forEach方法。
+
+function log(element, index, array) {
+  console.log('[' + index + '] = ' + element);
+}
+
+[2, 5, , 9].forEach(log);
+// [0] = 2
+// [1] = 5
+// [3] = 9
+
+map()将每个元素传递给指定函数，返回一个数组，所以传递的函数应该有返回值
+var numbers = [1, 2, 3];
+
+numbers.map(function(n){ return n+1 });
+// [2, 3, 4]
+
+numbers
+// [1, 2, 3]
+
+map也可以接受第二个参数，用来绑定回调函数的this关键字。
+
+var out = [];
+
+[1, 2, 3].map(function(elem, index, arr){
+  this.push(elem * elem);
+}, out);
+
+out // [1, 4, 9]
+
+
+filter()返回数组的一个子集，调用的函数只能返回true或false
+
+every(),some()对元素进行函数判断，返回true或false
+
+
+
+类数组对象：拥有length属性，类属性为"Array"的对象，例如arguments对象
+检测是否为类数组对象，含有length属性：
+function isArrayLike(o){
+	if( o && typeof o ==="object" && o.length >= 0){
+		return true;
+	}else{
+		return false;
+	}
+}
+静态方法：Array.isArray()
+判断对象是否为数组：IE9以上使用isArray(),或者使用Object.prototype.toString.apply(value) === '[Object Array]'或typeof value == 'object' && value.constructor === Array或value instanceof Array,后两者无法跨窗口使用
+
+当把字符串看做数组时，字符串是只读的，所以用push等方法无法修改字符串

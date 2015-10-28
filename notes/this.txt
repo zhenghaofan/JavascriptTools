@@ -1,0 +1,133 @@
+this在Javascript中和执行环境，而非声明环境有关;
+
+当函数被当做对象调用或用new新建或在对象内使用时，this指向新建对象；
+
+作为函数调用时this绑定到全局对象window或严格模式下的undefined
+
+在嵌套函数内部，this为全局对象window或严格模式下的undefined，
+
+setTimeout、setInterval和匿名函数执行时的当前对象是全局对象window
+
+DOM事件处理中为undefined
+
+this的使用可以分成以下几个场合。
+全局环境
+
+在全局环境使用this，它指的就是顶层对象window。
+
+this === window // true 
+
+function f() {
+    console.log(this === window); // true
+}
+上面代码说明，不管是不是在函数内部，只要是在全局环境下运行，this就是指全局对象window。、
+
+构造函数
+
+构造函数中的this，指的是实例对象。
+
+var O = function(p) {
+    this.p = p;
+};
+
+O.prototype.m = function() {
+    return this.p;
+};
+上面代码定义了一个构造函数O。由于this指向实例对象，所以在构造函数内部定义this.p，就相当于定义实例对象有一个p属性；然后m方法可以返回这个p属性。
+
+var o = new O("Hello World!");
+
+o.p // "Hello World!"
+o.m() // "Hello World!"
+（3）对象的方法
+
+当a对象的方法被赋予b对象，该方法就变成了普通函数，其中的this就从指向a对象变成了指向b对象。这就是this取决于运行时所在的对象的含义，所以要特别小心。如果将某个对象的方法赋值给另一个对象，会改变this的指向。
+
+var o1 = new Object();
+o1.m = 1;
+o1.f = function (){ console.log(this.m);};
+
+o1.f() // 1
+
+var o2 = new Object();
+o2.m = 2;
+o2.f = o1.f
+
+o2.f() // 2
+从上面代码可以看到，f是o1的方法，但是如果在o2上面调用这个方法，f方法中的this就会指向o2。这就说明JavaScript函数的运行环境完全是动态绑定的，可以在运行时切换。
+
+如果不想改变this的指向，可以将o2.f改写成下面这样。
+
+o2.f = function (){ o1.f() };
+
+o2.f() // 1
+上面代码表示，由于f方法这时是在o1下面运行，所以this就指向o1。
+
+有时，某个方法位于多层对象的内部，这时如果为了简化书写，把该方法赋值给一个变量，往往会得到意想不到的结果。
+
+var a = {
+        b : {
+            m : function() {
+                console.log(this.p);
+            },
+            p : 'Hello'
+        }
+};
+
+var hello = a.b.m;
+hello() // undefined
+上面代码表示，m属于多层对象内部的一个方法。为求简写，将其赋值给hello变量，结果调用时，this指向了全局对象。为了避免这个问题，可以只将m所在的对象赋值给hello，这样调用时，this的指向就不会变。
+
+var hello = a.b;
+hello.m() // Hello
+（4）Node.js
+
+在Node.js中，this的指向又分成两种情况。全局环境中，this指向全局对象global；模块环境中，this指向module.exports。
+
+// 全局环境
+this === global // true
+
+// 模块环境
+this === module.exports // true
+
+
+
+var a = {  
+  name: 'suqing',  
+  getContext: function(){  
+    return this;    
+  }  
+}  
+a.getContext() //a对象，是对象内的引用
+
+var someone = {
+    name: "Bob",
+    showName: function(){
+        alert(this.name);
+    }
+};
+
+var other = {
+    name: "Tom",
+    showName: someone.showName
+}
+
+other.showName();　　//Tom
+
+
+var name = "Tom";
+
+var Bob = {
+    name: "Bob",
+    show: function(){
+        alert(this.name);
+    }
+}
+
+var show = Bob.show;
+show();　//Tom
+
+
+DOM event handler：
+<span id=​"s_rp_words" class=​"s-rp-words">​…​</span>​
+document.getElementById('s_rp_words').addEventListener('click', function(){ console.log(this); })//undefined

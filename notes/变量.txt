@@ -1,0 +1,34 @@
+声明变量：使用var    ES6中可能追加 let声明块局部变量，const声明只读常量
+用var声明时未赋初值的变量，值会被设定为undefined（译注：即未定义值，本身也是一个值）。试图访问一个未初始化的变量会导致一个ReferenceError异常被抛出。可使用undefinded检查变量是否被赋值
+数值类型环境中undefined值会被转换为NaN（var a;a+2;//NaN）。
+当声明一个全局变量时，实际上定义了一个全局对象的属性，使用var声明时，这个属性是不可配置的，无法通过delete删除，没有使用var声明的属性则可以删除；局部变量当作函数调用相关的某个对象的属性
+
+变量声明会被提升至所有语句和函数的前面：
+var aaa = "aaa";
+function myFunc(){
+	console.log(aaa); //undefined,相当于函数内部var aaa被提前，但没赋值
+	var aaa = "bbb";
+	console.log(aaa); //"bbb"
+}
+
+在所有函数之外声明的变量，叫做全局变量，因为它可被当前文档中的其他代码所访问。在函数内部声明的变量，叫做局部变量，因为它只能在该函数内部访问。局部变量优先级高于全局变量：
+var aaa = "aaa"
+function myFunc(){
+	var aaa = "bbb";
+	return aaa;
+}
+myFunc() // "bbb"
+如果改成return this.aaa，则返回aaa
+
+JavaScript没有 语句块 作用域；相反，语句块中声明的变量将成为语句块所在代码段的局部变量。例如，如下的代码将在控制台输出 5，因为 x 的作用域是声明了 x 的那个函数（或全局范围），而不是 if 语句块。
+
+if (true) {
+  var x = 5;
+}
+console.log(x); // 5
+如果使用 ECMAScript 6 中的 let 声明，上述行为将发生变化。
+
+if (true) {
+  let y = 5;
+}
+console.log(y); // ReferenceError: y is not defined

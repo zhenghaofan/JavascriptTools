@@ -1,0 +1,28 @@
+1.压缩合并：
+YUI Compressor
+Google Clousure Complier
+UglifyJS
+CleanCSS
+
+2.项目构建：
+Grunt
+Gulp
+Yeoman
+FIS
+Mod
+
+代码组织：
+
+类库模块化
+CommonJS/AMD
+YUI3模块
+
+业务逻辑模块化
+bower/component
+
+文件加载
+LABjs
+SeaJS/Require.js
+
+模块化预处理器
+Browserify

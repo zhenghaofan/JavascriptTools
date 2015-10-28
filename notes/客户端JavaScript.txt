@@ -1,0 +1,63 @@
+window对象时所用JavaScript API的接入点，通常引用全局窗口对象的属性时并不需要用到window
+
+window对象中document属性：引用Document对象，
+
+window,document,element对象中的事件处理程序属性：属性名以on开头，比如onclick
+
+onload属性在所有文档内容加载完之后触发
+
+在html中嵌入JavaScript：
+1.放在script标签间 2.放在script标签的src属性中 3.放在html的事件处理程序中，如onclick=""
+4.放在一个url中，url使用特殊的"javascrpte:"协议
+
+script标签间：如果代码中包含"<"或"&"，会被解释为XML标记，所以如果要使用XHTML， 最好把所有的JavaScript代码放在CDATA中：
+<script><![CDATA[
+JavaScript代码	
+]]</script>
+
+URL中的JavaScript：
+javascript：后面跟随的是会被JavaScript解释器运行的代码，语句之间必须用分号隔开；当执行完JavaScript时，浏览器会根据返回值选择是否替换当前显示的文档，如果返回undefined则不会替换，要确保javascript:URL不会替换当前文档，可以加上javascript:void ... 
+
+JavaScript的执行有两个阶段：
+1.载入文档内容，并执行script标签中的代码
+2.所有脚本执行完成后，JavaScript进行第二阶段--事件驱动阶段， web浏览器调用事件处理函数相应异步发生的事件。此阶段发生的第一个事件是load事件。
+
+如果JavaScript脚本是由src属性指定的，那么位于script标签后的文档在下载和执行脚本之前都不会出现在浏览器中，脚本的执行默认是同步和阻塞的，使用defer和async可以改变脚本的执行流程，defer告诉浏览器可以延迟脚本的执行，直到所有文档载入并解析完成；async属性是的浏览器可以尽快的执行脚本，解析器没有停下来。异步脚本禁止使用document.write()
+
+客户端JavaScript线程模型：
+严格的单线程，两个事件处理程序不会同一时刻运行；它意味着浏览器必须在脚本和事件处理程序执行时，停止响应用户输入。如果事件处理程序计算复杂的任务将会导致浏览器无法响应。可能的话将任务分为离散的任务，使用setTimeout()和setInterval()在后台运行子任务。HTML5定义了一个并发的控制方式即Web worker。
+
+客户端JavaScript时间线：
+1.浏览器创建Document对象，开始解析web页面，解析HTML和内容并添加到文档中，这个阶段document.readystate = "loading"
+2.当html解析器遇到没有defer和async的script时，把这个元素添加到文档中，并执行脚本，如果脚本执行解析器会暂停，这样脚本可以通过document.write写入文档输入流中。 同步脚本可以看到自己的script和它们之前的文档内容
+3.async脚本会继续下载而不阻止解析器解析
+4.文档解析完毕后document.readystate = "interactive"
+5.defer脚本可能在这个时间执行，禁止使用document.write()
+6.浏览器在Document对象上触发 DOMContentLoaded 事件，标志着转入异步事件驱动阶段，这时异步脚本仍有可能没执行完
+7.文档解析完成，但图片可能还没加载完，当所有这些内容加载完，异步脚本执行完时，document.readyState = "complete", 浏览器触发window对象上的load事件
+8.开始调用异步事件，并异步响应用户输入
+
+JQuery中事件处理程序时通过bind()完成的，不需要考虑到底使用addEventListener()还是attachEvent()
+
+JavaScript同源策略：
+JavaScript脚本不能读取从不同服务器载入的文档内容，不能再来自不同服务器的文档上注册事件监听器；只能读取和所属文档来源相同的窗口和文档属性。
+不同来源：
+http:和https:,端口不同，ip不同，服务器不同
+
+XSS攻击：
+跨站脚本攻击，即攻击者向目标站点注入HTML标签或脚本
+预防方式：在使用任何不可信的数据创建文档内容之前，从中移除HTML标签(主要是script标签)，比如：
+aaa = aaa. replace(/</g, "&lt;").replace(/>/g,"&gt;");
+HTML5中为iframe标签定义了一个sandbox属性，它允许显示不可信的内容，并自动禁用脚本
+
+拒绝服务攻击：例如无限弹窗或死循环计算占用CPU
+
+框架：jQuery,Prototype,Dojo,YUI...
+
+
+
+
+
+
+
+

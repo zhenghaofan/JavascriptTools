@@ -1,0 +1,164 @@
+浅拷贝(拷贝到最上一层合并)、深拷贝（逐个对象递归拷贝合并）
+
+浅复制的实现
+
+　　如果仅仅需要实现浅复制，可以采用类似下面的写法：
+
+1.  $ = { 
+
+2.       extend : function(target, options) { 
+
+3.          for (name in options) { 
+
+4.              target[name] = options[name]; 
+
+5.          } 
+
+6.          return target; 
+
+7.      } 
+
+8.  }; 
+
+jQuery extend方法:
+
+1.  jQuery.extend = jQuery.fn.extend = function() {
+
+2.    // 定义默认参数和变量
+
+3.    // 对象分为扩展对象和被扩展的对象
+
+4.    //options 代表扩展的对象中的方法
+
+5.    //name 代表扩展对象的方法名
+
+6.    //i    为扩展对象参数起始值
+
+7.    //deep 默认为浅复制
+
+8.    var options, name, src, copy, copyIsArray, clone,
+
+9.      target = arguments[0] || {},
+
+10.    i = 1,
+
+11.    length = arguments.length,
+
+12.    deep = false;
+
+13. 
+
+14.  //当第一个参数为布尔类型是，次参数定义是否为深拷贝
+
+15.  //对接下来的参数进行处理
+
+16.  if ( typeof target === "boolean" ) {
+
+17.    deep = target;
+
+18.    target = arguments[1] || {};
+
+19.    // 当定义是否深拷贝时，参数往后移动一位
+
+20.    i = 2;
+
+21.  }
+
+22. 
+
+23.  // 如果要扩展的不是对象或者函数，则定义要扩展的对象为空
+
+24.  if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
+
+25.    target = {};
+
+26.  }
+
+27. 
+
+28.  // 当只含有一个参数时，被扩展的对象是jQuery或jQuery.fn
+
+29.  if ( length === i ) {
+
+30.    target = this;
+
+31.    --i;
+
+32.  }
+
+33. 
+
+34.  //对从i开始的多个参数进行遍历
+
+35.  for ( ; i < length; i++ ) {
+
+36.    // 只处理有定义的值
+
+37.    if ( (options = arguments[ i ]) != null ) {
+
+38.      // 展开扩展对象
+
+39.      for ( name in options ) {
+
+40.        src = target[ name ];
+
+41.        copy = options[ name ];
+
+42. 
+
+43.        // 防止循环引用
+
+44.        if ( target === copy ) {
+
+45.          continue;
+
+46.        }
+
+47. 
+
+48.        // 递归处理深拷贝
+
+49.        if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
+
+50.          if ( copyIsArray ) {
+
+51.            copyIsArray = false;
+
+52.            clone = src && jQuery.isArray(src) ? src : [];
+
+53. 
+
+54.          } else {
+
+55.            clone = src && jQuery.isPlainObject(src) ? src : {};
+
+56.          }
+
+57. 
+
+58.          target[ name ] = jQuery.extend( deep, clone, copy );
+
+59. 
+
+60.        // 不处理未定义值
+
+61.        } else if ( copy !== undefined ) {
+
+62.          //给target增加属性或方法
+
+63.          target[ name ] = copy;
+
+64.        }
+
+65.      }
+
+66.    }
+
+67.  }
+
+68. 
+
+69.  //返回
+
+70.  return target;
+};

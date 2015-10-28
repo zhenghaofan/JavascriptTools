@@ -1,0 +1,113 @@
+Document对象是DOM API中的一个核心对象，代表文档的内容
+
+DOM是表示操作HTML和XML文档内容的基础API。
+
+每个标签都是文档的一个Element节点，表示一个Node对象，最顶层是文档Document对象，代表整个文档。Document,Element,Text都是Node的子类
+
+获取Element对象：
+getElementById()
+getElementByName()（name属性只在少数HTML元素中有效，包括form,iframe,img,input）返回一个NodeList对象，类似一个数组
+getElementsByTagName(),getElementsByClassName()（IE8及以下版本没有）返回一个NodeList对象
+
+通过CSS选择器获取：ducument.querySelectorAll(),以CSS选择器为参数返回NodeList对象，querySelector()则返回第一个；jQuery使用Sizzle选择器
+
+document.body指定body元素，document.head指定head元素
+
+NodeList对象和HTMLCollection对象(document.images,document.forms)都是只读的类数组对象，拥有length属性，它们是实时变化的，当文档变化时，它们包含的元素也会改变
+
+所有Node对象都有如下属性：
+parentNode,childNodes,firstChild,lastChild,nextSibling,previoursSibling,nodeType,nodeValue,nodeName
+
+getAttribute,setAttribute()获取和设置非标准的HTML属性，在jQuery中对应attr
+
+元素上的数据集属性：
+在HTML5中，任意以"data-"开头的属性名字都是合法的，它们通常用来给元素绑定额外数据；Element对象定义了dataset属性，它的属性指定一个对象，对象的各个属性是去掉data-之后的名字，可以通过dataset.xxx访问"data-xxx"属性，jQuery中对应data()方法
+
+Element中有innerHTML属性，如果对innerHTML使用+=操作法效率通常十分低下，因为既要序列化又要解析；innerHTML是对当前元素中的内容进行设置，HTML5中的outerHTML属性使用新的HTML内容完全替换整个元素
+
+查询纯文本内容使用textContent属性，IE中必须使用innerText属性
+
+创建节点：createElement()
+插入节点：appendChild(),insertBefore()
+删除节点：removeChild()在父节点上调用删除子节点
+替换节点：replaceChild()
+复制节点：cloneNode()
+例子：
+function loadsync(url){
+	var head = document.getElementsByTagName('head')[0];
+	var s = document.createElement('script');
+	s.src = url;
+	head.appendChild(s);
+}
+
+DocumentFragment是一个特殊节点，作为其他节点的临时容器，调用createDocumentFragment()创建
+
+CSS元素操作：
+文档坐标与视口坐标：如果文档比视口小，则文档坐标与视口坐标是同一个，一般要在这两种坐标系之间转换，也就需要判断窗口滚动条的位置。使用scrollTop,scrollLeft获取滚动条位置，如果发生了滚动，文档坐标就等于视口坐标+scrollTop/scrollLeft
+
+getBoundingClientRect()返回一个具有元素位置信息的对象，具有width,height,left,right,top,bottom
+
+scrollTo(x,y)
+
+任何HTML元素的只读属性offsetWidth,offsetHeight返回它的屏幕尺寸，返回的尺寸包含边框和内边距，除去外边距；
+
+offsetLeft,offsetTop返回元素的X,Y坐标，是文档坐标
+
+clientWidth,clientHeight不包含边框大小，只包含内边距和内容，内联元素的clientWidth和clientHeight都是0
+
+scrollWidth,scrollHeight包括内边距和内容再加上任何溢出的尺寸，当内容不溢出时，scrollWidth==clientWidth,当内容溢出时，scrollWidth>clientWidth
+
+通过设置scrollLeft,scrollTop来让元素中的内容滚动
+
+
+form表单操作：
+submit(),reset()
+onsubmit程序用于监听表单提交，表单提交前调用onsubmit程序；它只能通过点击表单的提交按钮触发，而表单的submit()不触发onsubmit程序；onreset程序一样
+
+为select元素增加一个新选项：//老式添加，现在都是通过createElement
+var aaa = new Option("AAA","aaa",false,false);
+var mySelect = document.getElementById('select');
+mySelect.options[mySelect.options.length] = aaa;
+
+document其他属性：
+cookie,domain用于放宽同源策略限制，lastModified文档修改时间，location,referrer当前文档的来源即上一个文档，URL
+
+只有在解析文档时才能使用document.write()输出HTML到文档中；如果放在一个事件处理程序的函数中，它将替换当前文档所有内容
+
+获取用户选择的文本：
+HTML5中使用window.getSelection()
+
+设置任何标签的contenteditable属性启用可编辑性
+
+操纵CSS：
+通过style属性，如果一个属性名包含连字符，则连字符后的单词大写，如：e.style.fontSize = "12px";
+不可以使用e.style.font-size;属性值最好都包含单位，0不用
+操纵CSS类通过className
+可以通过设置disabled = true设置style与link标签中的可视性
+
+事件处理：
+事件传播方式：冒泡、事件捕获
+表单中的focus和blur事件不会冒泡，scroll事件也不会
+window中的beforeunload事件用于确定用户是否离开当前页面
+鼠标事件中clientX,clientY指定了鼠标在当前窗口的位置，是视口坐标，加上滚动偏移量可得到文档坐标
+
+addEventListener()除了IE8及以前的浏览器都支持的标准事件处理函数，第一个参数是事件类型，第二个参数是处理函数，第三个是归档函数是否被捕获事件处理程序捕获，通常传false
+
+当注册多个事件处理程序时，调用程序顺序为：
+通过设置对象属性或HTML属性的优先调用；使用addEventListener()按照注册顺序调用；attachEvent()可能按照任意顺序调用
+
+事件传播的三个阶段：
+1.捕获阶段，发生在目标处理程序调用之前，将addEventListener()第三个参数定义为true时注册为捕获事件处理程序，会在第一阶段调用，方向有window对象向下一直到事件目标的父元素的事件处理程序，常用于处理鼠标拖放事件
+2.对象本身的事件处理程序
+3.事件冒泡
+
+取消事件：
+通用方法为preventDefault(),兼容方法：
+function cancelHandler(event){
+	var event = event || window.event;
+	if(event.preventDefault)
+		event.preventDefault();
+	if(event.returnValue)
+		event.returnValue = false;//IE
+	return false;//处理添加在对象属性的处理程序
+}

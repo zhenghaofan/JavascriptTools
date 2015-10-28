@@ -1,0 +1,269 @@
+Generator函数是ES6提供的一种异步编程解决方案，语法行为与传统函数完全不同。
+
+Generator函数有多种理解角度。从语法上，首先可以把它理解成，Generator函数是一个状态机，封装了多个内部状态。
+
+执行Generator函数会返回一个遍历器对象，也就是说，Generator函数除了状态机，还是一个遍历器对象生成函数。返回的遍历器对象，可以依次遍历Generator函数内部的每一个状态。
+
+形式上，Generator函数是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义不同的内部状态（yield语句在英语里的意思就是“产出”）。
+
+function* helloWorldGenerator() {
+  yield 'hello';
+  yield 'world';
+  return 'ending';
+}
+
+var hw = helloWorldGenerator();
+
+上面代码定义了一个Generator函数helloWorldGenerator，它内部有两个yield语句“hello”和“world”，即该函数有三个状态：hello，world和return语句（结束执行）。
+
+然后，Generator函数的调用方法与普通函数一样，也是在函数名后面加上一对圆括号。不同的是，调用Generator函数后，该函数并不执行，返回的也不是函数运行结果，而是一个指向内部状态的指针对象，也就是上一章介绍的遍历器对象（Iterator Object）。
+
+下一步，必须调用遍历器对象的next方法，使得指针移向下一个状态。也就是说，每次调用next方法，内部指针就从函数头部或上一次停下来的地方开始执行，直到遇到下一个yield语句（或return语句）为止。换言之，Generator函数是分段执行的，yield语句是暂停执行的标记，而next方法可以恢复执行。
+
+hw.next()
+// { value: 'hello', done: false }
+
+hw.next()
+// { value: 'world', done: false }
+
+hw.next()
+// { value: 'ending', done: true }
+
+hw.next()
+// { value: undefined, done: true }
+上面代码一共调用了四次next方法。
+
+第一次调用，Generator函数开始执行，直到遇到第一个yield语句为止。next方法返回一个对象，它的value属性就是当前yield语句的值hello，done属性的值false，表示遍历还没有结束。
+
+第二次调用，Generator函数从上次yield语句停下的地方，一直执行到下一个yield语句。next方法返回的对象的value属性就是当前yield语句的值world，done属性的值false，表示遍历还没有结束。
+
+第三次调用，Generator函数从上次yield语句停下的地方，一直执行到return语句（如果没有return语句，就执行到函数结束）。next方法返回的对象的value属性，就是紧跟在return语句后面的表达式的值（如果没有return语句，则value属性的值为undefined），done属性的值true，表示遍历已经结束。
+
+第四次调用，此时Generator函数已经运行完毕，next方法返回对象的value属性为undefined，done属性为true。以后再调用next方法，返回的都是这个值。
+
+总结一下，调用Generator函数，返回一个遍历器对象，代表Generator函数的内部指针。以后，每次调用遍历器对象的next方法，就会返回一个有着value和done两个属性的对象。value属性表示当前的内部状态的值，是yield语句后面那个表达式的值；done属性是一个布尔值，表示是否遍历结束。
+
+yield语句就是暂停标志。
+
+遍历器对象的next方法的运行逻辑如下。
+
+（1）遇到yield语句，就暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回的对象的value属性值。
+
+（2）下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。
+
+（3）如果没有再遇到新的yield语句，就一直运行到函数结束，直到return语句为止，并将return语句后面的表达式的值，作为返回的对象的value属性值。
+
+（4）如果该函数没有return语句，则返回的对象的value属性值为undefined。
+
+需要注意的是，yield语句后面的表达式，只有当调用next方法、内部指针指向该语句时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
+
+一个函数里面，只能执行一次（或者说一个）return语句，但是可以执行多次（或者说多个）yield语句。正常函数只能返回一个值，因为只能执行一次return；Generator函数可以返回一系列的值，因为可以有任意多个yield。从另一个角度看，也可以说Generator生成了一系列的值，这也就是它的名称的来历（在英语中，generator这个词是“生成器”的意思）。
+
+另外需要注意，yield语句不能用在普通函数中，否则会报错。
+
+(function (){
+  yield 1;
+})()
+// SyntaxError: Unexpected number
+上面代码在一个普通函数中使用yield语句，结果产生一个句法错误。
+
+for...of循环可以自动遍历Generator函数，且此时不再需要调用next方法。
+
+function *foo() {
+  yield 1;
+  yield 2;
+  yield 3;
+  yield 4;
+  yield 5;
+  return 6;
+}
+
+for (let v of foo()) {
+  console.log(v);
+}
+// 1 2 3 4 5
+
+这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
+
+foo('a', function (a) {
+  if (a.error) {
+    throw new Error(a.error);
+  }
+
+  foo('b', function (b) {
+    if (b.error) {
+      throw new Error(b.error);
+    }
+
+    foo('c', function (c) {
+      if (c.error) {
+        throw new Error(c.error);
+      }
+
+      console.log(a, b, c);
+    });
+  });
+});
+使用Generator函数可以大大简化上面的代码。
+
+function* g(){
+  try {
+    var a = yield foo('a');
+    var b = yield foo('b');
+    var c = yield foo('c');
+  } catch (e) {
+    console.log(e);
+  }
+
+  console.log(a, b, c);
+}
+
+Generator是实现状态机的最佳结构。比如，下面的clock函数就是一个状态机。
+
+var ticking = true;
+var clock = function() {
+  if (ticking)
+    console.log('Tick!');
+  else
+    console.log('Tock!');
+  ticking = !ticking;
+}
+上面代码的clock函数一共有两种状态（Tick和Tock），每运行一次，就改变一次状态。这个函数如果用Generator实现，就是下面这样。
+
+var clock = function*(_) {
+  while (true) {
+    yield _;
+    console.log('Tick!');
+    yield _;
+    console.log('Tock!');
+  }
+};
+上面的Generator实现与ES5实现对比，可以看到少了用来保存状态的外部变量ticking，这样就更简洁，更安全（状态不会被非法篡改）、更符合函数式编程的思想，在写法上也更优雅。Generator之所以可以不用外部变量保存状态，是因为它本身就包含了一个状态信息，即目前是否处于暂停态。
+
+
+应用：
+（1）异步操作的同步化表达
+Generator函数的暂停执行的效果，意味着可以把异步操作写在yield语句里面，等到调用next方法时再往后执行。这实际上等同于不需要写回调函数了，因为异步操作的后续操作可以放在yield语句下面，反正要等到调用next方法时再执行。所以，Generator函数的一个重要实际意义就是用来处理异步操作，改写回调函数。
+
+function* loadUI() {
+  showLoadingScreen();
+  yield loadUIDataAsynchronously();
+ hideLoadingScreen();
+}
+var loader = loadUI();
+// 加载UI
+loader.next()
+
+// 卸载UI
+loader.next()
+上面代码表示，第一次调用loadUI函数时，该函数不会执行，仅返回一个遍历器。下一次对该遍历器调用next方法，则会显示Loading界面，并且异步加载数据。等到数据加载完成，再一次使用next方法，则会隐藏Loading界面。可以看到，这种写法的好处是所有Loading界面的逻辑，都被封装在一个函数，按部就班非常清晰。
+
+Ajax是典型的异步操作，通过Generator函数部署Ajax操作，可以用同步的方式表达。
+
+function* main() {
+  var result = yield request("http://some.url");
+  var resp = JSON.parse(result);
+    console.log(resp.value);
+}
+
+function request(url) {
+  makeAjaxCall(url, function(response){
+    it.next(response);
+  });
+}
+
+var it = main();
+it.next();
+上面代码的main函数，就是通过Ajax操作获取数据。可以看到，除了多了一个yield，它几乎与同步操作的写法完全一样。注意，makeAjaxCall函数中的next方法，必须加上response参数，因为yield语句构成的表达式，本身是没有值的，总是等于undefined。
+
+下面是另一个例子，通过Generator函数逐行读取文本文件。
+
+function* numbers() {
+  let file = new FileReader("numbers.txt");
+  try {
+    while(!file.eof) {
+      yield parseInt(file.readLine(), 10);
+    }
+  } finally {
+    file.close();
+  }
+}
+上面代码打开文本文件，使用yield语句可以手动逐行读取文件。
+
+
+控制流管理
+如果有一个多步操作非常耗时，采用回调函数，可能会写成下面这样。
+
+step1(function (value1) {
+  step2(value1, function(value2) {
+    step3(value2, function(value3) {
+      step4(value3, function(value4) {
+        // Do something with value4
+      });
+    });
+  });
+});
+采用Promise改写上面的代码。
+
+Q.fcall(step1)
+  .then(step2)
+  .then(step3)
+  .then(step4)
+  .then(function (value4) {
+    // Do something with value4
+  }, function (error) {
+    // Handle any error from step1 through step4
+  })
+  .done();
+上面代码已经把回调函数，改成了直线执行的形式，但是加入了大量Promise的语法。Generator函数可以进一步改善代码运行流程。
+
+function* longRunningTask() {
+  try {
+    var value1 = yield step1();
+    var value2 = yield step2(value1);
+    var value3 = yield step3(value2);
+    var value4 = yield step4(value3);
+    // Do something with value4
+  } catch (e) {
+    // Handle any error from step1 through step4
+  }
+}
+然后，使用一个函数，按次序自动执行所有步骤。
+
+scheduler(longRunningTask());
+
+function scheduler(task) {
+  setTimeout(function() {
+    var taskObj = task.next(task.value);
+    // 如果Generator函数未结束，就继续调用
+    if (!taskObj.done) {
+      task.value = taskObj.value
+      scheduler(task);
+    }
+  }, 0);
+}
+注意，yield语句是同步运行，不是异步运行（否则就失去了取代回调函数的设计目的了）。实际操作中，一般让yield语句返回Promise对象。
+
+var Q = require('q');
+
+function delay(milliseconds) {
+  var deferred = Q.defer();
+  setTimeout(deferred.resolve, milliseconds);
+  return deferred.promise;
+}
+
+function* f(){
+  yield delay(100);
+};
+上面代码使用Promise的函数库Q，yield语句返回的就是一个Promise对象。
+
+多个任务按顺序一个接一个执行时，yield语句可以按顺序排列。多个任务需要并列执行时（比如只有A任务和B任务都执行完，才能执行C任务），可以采用数组的写法。
+
+function* parallelDownloads() {
+  let [text1,text2] = yield [
+    taskA(),
+    taskB()
+  ];
+  console.log(text1, text2);
+}
+上面代码中，yield语句的参数是一个数组，成员就是两个任务taskA和taskB，只有等这两个任务都完成了，才会接着执行下面的语句。

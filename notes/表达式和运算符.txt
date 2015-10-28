@@ -1,0 +1,40 @@
+表达式是一个短语，JavaScript解释器会计算一个结果
+
+一个变量名也是一个表达式
+
+最简单的表达式包括：直接字面量("aaa",123)，关键字(true,false,this)和变量
+
+函数调用表达式由一个表示函数对象的表达式和0个或多个参数表达式构成
+
+对象创建表达式：new Object()  new AAA();如果不需要传入任何参数，括号可以省略
+
+in运算符：
+希望左操作数为一个字符串，或者将它转为字符串，如果右侧对象拥有一个名为左操作数的属性，则返回true
+
+typeof运算符：返回"number","string","boolean","object","function","undefined"
+typeof数组返回object
+返回表示操作数类型的一个字符串，最常用的用法：
+typeof aaa=="string" ? "'"+aaa+"'" : aaa
+尽管JavaScript中函数时对象的一种，但使用typeof还是会分开对待，typeof函数将返回"function"
+判断一个对象是否为函数：
+if(typeof value === 'function'){}
+
+instanceof运算符：
+如果左侧对象是右侧类的实例，则返回true;而类是通过初始化构造函数来定义的，所以右操作数应该是一个函数；所以对象都是Object的实例；instanceof判断时也会包括对父类的检测；为了计算a instanceof b 首先，JavaScript会计算b.prototype，在原形链中查找a，如果找到则返回true
+
+delete运算符：
+删除对象属性或数组元素：delete a.b; delete a[2]//删除数组元素时数组长度不变
+并不是所有属性都可以delete,内置的核心属性、函数、用户通过var定义的变量都不能删除，删除将抛出语法错误异常
+
+void运算符：
+出现在操作数之前，操作数照常计算，但忽略计算结果返回undefined
+
+逗号运算符：
+它是二元运算符，它的操作数是任意类型，先计算左操作数，然后计算右操作数，最后返回右操作数的值
+
+eval():
+用于解释运行由JavaScript代码组成的字符串；只有一个参数，如果这个参数不是字符串，则直接返回这个参数，如果是字符串，则把字符串当作JavaScript代码编译，编译失败会抛出错误，编译成功会返回表达式的值，如果表达式没有值，则返回undefined;
+严格模式下的eval可以查询或更改局部变量，但不能定义新的变量或函数
+
+
+

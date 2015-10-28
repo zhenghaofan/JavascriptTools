@@ -1,0 +1,235 @@
+当一个函数挂在一个对象上，作为一个对象的属性，通过这个对象来调用函数时，对象就是this的值；任何通过对象调用的函数都会传入这个隐式的实参；当这个函数（方法）没有返回值时，最好返回this,便于链式调用
+
+以表达式方式定义的函数无法提前，在定义之前无法调用；它可以出现在JavaScript代码的任何地方
+
+在严格模式下，调用函数（非通过对象调用）的上下文this的值是undefined；非严格模式下为window全局对象，定义一个函数检查是否为严格模式：
+var strict = (function(){return !this;}()); //true为严格模式
+所以当使用嵌套函数时，this的值不是undefined就是全局对象，当需要访问外部函数的this时，需要将其this放置在另一个变量中，如var self = this; 
+闭包内无法访问外部的arguments，所以闭包内的嵌套函数想访问外部实参，也要另一个变量，var outerArguments = arguments;
+
+arguments是一个类数组对象，typeof arguments == "object"
+
+使用Function()构造函数：
+var f = new Funciton("x", "y", "return x*y;");
+这种函数构造方法的编译总会在顶层函数执行，所有它无法捕获局部作用域，这样当它用于闭包时无法调用局部作用域中的变量
+
+构造函数调用：在函数调用前加new: var aaa = new Object()
+这个新对象aaa即作为调用Object()的上下文，所以this指向aaa
+
+间接函数调用：
+使用call,apply:call将所有实参列举出作为函数的实参，apply则是以数组的形式传入实参 
+
+bind():ES5中存在的方法
+将函数绑定至某个对象，在函数上调用bind()并传入一个对象o作为参数，将返回一个新函数：
+function aaa(){return this.x+1};
+var o = {x:1};
+var g = aaa.bind(o);
+g(); //2
+可以这样定义函数：
+function bind(f,o){
+	if(f.bind) return f.bind(o);
+	else
+		return function(){
+		return f.apply(o,arguments);
+		};
+}
+当bind()传入多个实参时，第一个实参是对象o，后面的实参也会绑定到this，称为currying(库里化)：
+var sum = function(x,y){return x+y};
+var res = sum.bind(null,1);//返回新的函数res()的第一个参数是1，期望只传入一个实参， 这个函数的length属性是2-1=1
+res(2); //1+2=3
+
+使用函数来避免命名空间的冲突与全局污染：
+可以定义一个立即执行函数：(IIFE)
+(function(){
+	
+}());//左边圆括号不能省略，省略会导致变成函数声明语句
+
+IIFE三种常用方式：
+1.(function(){
+	
+}());
+2.(function(){
+	
+})();
+3.!function(){
+	
+}();
+IIFE优点：
+1.减少作用域查找。使用IIFE的一个微小的性能优势是通过匿名函数的参数传递常用全局对象window、document、jQuery，在作用域内引用这些全局对象。JavaScript解释器首先在作用域内查找属性，然后一直沿着链向上查找，直到全局范围。将全局对象放在IIFE作用域内提升js解释器的查找速度和性能
+2.有利于压缩。另一个微小的优势是有利于代码压缩。既然通过参数传递了这些全局对象，压缩的时候可以将这些全局对象匿名为一个字符的变量名（只要这个字符没有被其他变量使用过）。
+3.避免全局命名冲突。当使用jQuery的时候，全局的window.jQuery对象 作为一个参数传递给$，在匿名函数内部你再也不需要担心$和其他库或者模板申明冲突。
+4.通过传参的方式，可以灵活的加载第三方插件。（当然使用模块化加载更好，这里不考虑。）举个例子，如果a页面需要使用KindEditor，a.html引入kindeditor.js 和 a.js
+你可能会这么写 a.js： 
+$(function() {  
+  
+   var editor  
+    KindEditor.ready(function(K) {  
+  
+        editor = K.create('textarea[data-name="kindeditor"]', {  
+            resizeType : 1  
+        })  
+    })  
+  
+})  
+ 
+b页面不需要使用Kindeditor，没有引入kindeditor.js。但是在合并JS代码后，b页面也会执行a.js中的代码，页面报错Uncaught ReferenceError: KindEditor is not defined。也就是b页面执行了KindEditor，难道所有页面都要加载Kindeditor源文件？ 
+可以这么修改a.js，将KindEditor变量参数化，通过给立即执行的函数表示式的参数赋值，那么其他页面都不需要加载Kindeditor源文件
+
+(function( KindEditor){  
+  
+    var editor  
+    if(KindEditor){  
+        KindEditor.ready(function(K) {  
+  
+            editor = K.create('textarea[data-name="kindeditor"]', {  
+            resizeType : 1  
+            })  
+        })  
+    }  
+  
+})(KindEditor || undefined)  
+
+
+当使用 Function.prototype 上的 call 或者 apply 方法时，函数内的 this 将会被 显式设置为函数调用的第一个参数。
+
+闭包：
+JavaScript函数的执行依赖于变量的作用域，这个作用域是函数定义时决定的，不是函数调用时决定的，函数对象可以通过作用域链相互关联起来，函数体内部的变量都可以保存在函数的作用域内，这种特性称为闭包。
+所有JavaScript函数都是闭包，它们都是对象，都关联到作用域链
+
+每次调用JavaScript函数时，会为它创建一个新的对象保存局部变量，并将这个对象添加到作用域链中，当函数返回的时候，就从这个作用域链将这个绑定变量的对象删除。如果这个函数没有嵌套函数，也就没有其他引用指向这个对象，这个对象就会被当做垃圾回收。
+如果这个函数有嵌套函数，并将它的返回值返回或存储在某处的属性中，就会有一个外部引用指向这个嵌套的函数，它就不会被当做垃圾回收，并且他所指向的变量绑定对象也不会被回收
+
+内部函数有权访问外部函数的私有变量，可以通过this指针或者内部构造函数实现这种特权方法
+模拟私有变量：（公开接口）
+
+function Counter(start) {
+    var count = start;
+    return {
+        increment: function() {
+            count++;
+        },
+
+        get: function() {
+            return count;
+        }
+    }
+}
+
+var foo = Counter(4);
+foo.increment();
+foo.get(); // 5
+这里，Counter 函数返回两个闭包，函数 increment 和函数 get。 这两个函数都维持着 对外部作用域 Counter 的引用，因此总可以访问此作用域内定义的变量 count.
+
+为什么不可以在外部访问私有变量
+
+因为 JavaScript 中不可以对作用域进行引用或赋值，因此没有办法在外部访问 count 变量。 唯一的途径就是通过那两个闭包。
+
+var foo = new Counter(4);
+foo.hack = function() {
+    count = 1337;
+};
+上面的代码不会改变定义在 Counter 作用域中的 count 变量的值，因为 foo.hack 没有 定义在那个作用域内。它将会创建或者覆盖全局变量 count。
+
+模块模式：创建私有变量和特权方法(内部函数访问外部变量)，返回特权函数：（封装性）
+var singleton = function(){
+	var aaa = 10;//私有变量
+	function bbb(){
+		return false;
+	}
+	return {
+		public:true,
+		publicMethod:function(){
+			aaa++;
+			return bbb();
+		}
+	}
+}();
+
+
+
+利用闭包实现的私有属性存储器方法：
+//给对象o增加属性存储器方法，如果提供了一个判断函数predicate，setter会根据它检测参数的合法性，再存储它；如果判断函数返回false，则无法使用setter，setter抛出异常
+function addPrivateProperty(o,name,predicate){
+	var value;//属性值
+	o["get"+name] = function(){
+		return value;
+	};
+	o["set"+name] = function(v){
+		if(predicate && !predicate(v)){
+			throw Error("set" + name + "invalid value" + v);
+		}else{
+			value = v;
+		}
+	};
+}
+
+//调用addPrivateProperty方法
+var o = {};
+addPrivateProperty(o,"Name",function(x){
+	return typeof x=="string";
+});
+o.setName("aaa");
+
+
+
+错误代码实例：
+function constfuncs(){
+	var funcs = [];
+	for (var i=0;i<10;i++){
+		funcs[i] = function(){return i;};
+	}
+	return funcs;
+}
+var funcs = constfuncs();
+funcs[5]();//返回10；
+
+返回5的修改：
+function constfuncs(){
+	var funcs = [];
+	for (var i=0;i<10;i++){
+
+		funcs[i] = function(num){
+			return function(){
+				return num;
+			};
+		}(i);
+
+	}
+	return funcs;
+}
+或者：
+function constfuncs(){
+	var funcs = [];
+	for (var i=0;i<10;i++){
+
+		(function(num){
+		funcs[num] = function(){return num;};
+		}
+		)(i);
+	
+	}
+	return funcs;
+}
+
+使用闭包实现控制滚动条的动画：
+1.获取当前文档高度
+2.外部函数设置一个变量存储滚动条离页面最上方高度，初始为0
+3.内部函数setTimeout调用自身，控制高度增加
+
+为了不使用 new 关键字，构造函数必须显式的返回一个值。
+
+function Bar() {
+    var value = 1;
+    return {
+        method: function() {
+            return value;
+        }
+    }
+}
+Bar.prototype = {
+    foo: function() {}
+};
+
+new Bar();
+Bar();
+上面两种对 Bar 函数的调用返回的值完全相同，一个新创建的拥有 method 属性的对象被返回， 其实这里创建了一个闭包。
