@@ -1,0 +1,4 @@
+HTML5元素的大纲算法：
+https://developer.mozilla.org/zh-CN/docs/Web/Guide/HTML/Sections_and_Outlines_of_an_HTML5_document
+
+通过<body>,  <section>,  <article>,  <aside>, <footer>,  <header>和 <nav> 这些标记中的内容

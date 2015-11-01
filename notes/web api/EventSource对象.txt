@@ -1,0 +1,51 @@
+EventSource接口用来管理服务器发送事件.你可以通过将EventSource对象的onmessage属性指向一个自定义方法来处理那些从服务器接受到的无类型的消息(也就是,没有event字段的消息).你还可以使用addEventListener()方法来监听其他指定了事件类型的消息.
+
+服务器发送事件API也就是EventSource接口,在你创建一个新的EventSource对象的同时,你可以指定一个接受事件的URI.例如:
+
+var evtSource = new EventSource("ssedemo.php");
+
+一旦你成功初始化了一个事件源,就可以开始监听它的消息了:
+
+evtSource.onmessage = function(e) {
+  var newElement = document.createElement("li");
+  
+  newElement.innerHTML = "message: " + e.data;
+  eventList.appendChild(newElement);
+}
+
+evtSource.addEventListener("ping", function(e) {
+  var newElement = document.createElement("li");
+  
+  var obj = JSON.parse(e.data);
+  newElement.innerHTML = "ping at " + obj.time;
+  eventList.appendChild(newElement);
+}, false);
+
+服务器端发送的响应内容应该使用值为"text/event-stream"的MIME类型,php为例子：
+date_default_timezone_set("America/New_York");
+header("Content-Type: text/event-stream\n\n");
+
+$counter = rand(1, 10);
+while (1) {
+  // Every second, sent a "ping" event.
+  
+  echo "event: ping\n";
+  $curDate = date(DATE_ISO8601);
+  echo 'data: {"time": "' . $curDate . '"}';
+  echo "\n\n";
+  
+  // Send a simple message at random intervals.
+  
+  $counter--;
+  
+  if (!$counter) {
+    echo 'data: This is a message at time ' . $curDate . "\n\n";
+    $counter = rand(1, 10);
+  }
+  
+  ob_flush();
+  flush();
+  sleep(1);
+}
+
+上面的代码会让服务器每隔一秒生成一个事件流并返回,其中每条消息的事件类型为"ping",数据字段都使用了JSON格式,数组字段中包含了每个事件流生成时的时间字符串.而且会随机返回一些无事件类型的消息.
