@@ -1,0 +1,38 @@
+XMLHttpRequest 是一个 JavaScript 对象，
+通过它,你可以很容易的取回一个URL上的资源数据. 尽管名字里有XML, 但XMLHttpRequest 可以取回所有类型的数据资源,并不局限于XML. 而且除了HTTP ,它还支持file 和 ftp 协议.
+
+var xhr = new XMLHttpRequest();
+属性：
+onreadystatechange,是一个函数，当readyState改变时调用它
+
+readyState,
+0为未打开，open()未调用；
+1为未发送，send()未调用；
+2为已获得相应头，响应头和响应状态已经返回
+3为正在下载响应体，responseText已经获取了部分数据
+4为请求完成
+
+response, 响应实体
+responseText, 响应文本
+responseType, 响应类型，默认为字符串，还有arraybuffer,blob(包含有只读原始数据的类文件对象),document,json,text
+
+responseXML, 类型DOMString（UTF-16字符串）,响应是一个文档对象
+
+status，状态码
+statusText, 类型DOMString,响应状态信息，包含一个状态码和原因，如（"200 OK"）
+
+upload，函数，可以添加一个事件来跟踪上传
+
+方法：
+abort(),终止请求
+getAllResponseHeaders(),返回所有响应头
+
+getResponseHeader(DOMString header) 返回指定响应头的值
+
+open(DOMString method,DOMString url,boolean async,DOMString user,DOMString password)
+method为put,get,post...
+async为true,false,false表示send()直到收到响应时才返回
+user,password可选参数，授权时使用
+
+send()
+setRequestHeader(DOMString header,DOMString value),如setRequestHeader('content-type',"application/x-www-form-urlencoded")表示设置请求头中的content-type属性是客户端提交的文本内容编码为URL编码；还有multipart/form-data等

@@ -1,0 +1,34 @@
+XMLHttpRequest Level 2添加了一个新的接口FormData.
+
+利用FormData对象,我们可以通过JavaScript用一些键值对来模拟一系列表单控件,我们还可以使用XMLHttpRequest的send()方法来异步的提交这个"表单".(IE10以下不支持)
+
+比起普通的ajax,使用FormData的最大优点就是我们可以异步上传一个二进制文件.
+
+创建一个FormData对象
+你可以先创建一个空的FormData对象,然后使用append()方法向该对象里添加字段,如下:
+
+var oMyForm = new FormData();
+
+oMyForm.append("username", "Groucho");
+oMyForm.append("accountnum", 123456); // 数字123456被立即转换成字符串"123456"
+
+// fileInputElement中已经包含了用户所选择的文件
+oMyForm.append("userfile", fileInputElement.files[0]);
+
+var oFileBody = "<a id="a"><b id="b">hey!</b></a>"; // Blob对象包含的文件内容
+var oBlob = new Blob([oFileBody], { type: "text/xml"});
+
+oMyForm.append("webmasterfile", oBlob);
+
+var oReq = new XMLHttpRequest();
+oReq.open("POST", "http://foo.com/submitform.php");
+oReq.send(oMyForm);
+
+注: 字段"userfile"和"webmasterfile"的值都包含了一个文件.通过 FormData.append()方法赋给字段"accountnum"的数字被自动转换为字符(字段的值可以是一个Blob对象,一个File对象,或者一个字符串,剩下其他类型的值都会被自动转换成字符串).
+在该例子中,我们创建了一个名为oMyForm的FormData对象,该对象中包含了名为"username", "accountnum", "userfile" 以及 "webmasterfile"的字段名,然后使用XMLHttpRequest的send()方法把这些数据发送了出去."webmasterfile"字段的值不是一个字符串,还是一个Blob对象.
+
+利用表单新建：
+var formElement = document.getElementById("myFormElement");
+formData = new FormData(formElement);
+formData.append("serialnumber", serialNumber++);
+oReq.send(formData);
