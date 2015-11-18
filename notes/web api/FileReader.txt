@@ -1,0 +1,53 @@
+FileReader:
+使用FileReader对象,web应用程序可以异步的读取存储在用户计算机上的文件(或者原始数据缓冲)内容,可以使用File对象或者Blob对象来指定所要处理的文件或数据.
+
+其中File对象可以是来自用户在一个<input>元素上选择文件后返回的FileList对象,也可以来自拖放操作生成的 DataTransfer对象,还可以是来自在一个HTMLCanvasElement上执行mozGetAsFile()方法后的返回结果.
+
+想要创建一个FileReader对象,很简单,如下:
+
+var reader = new FileReader();
+
+readAsDataURL()方法：
+
+开始读取指定的Blob对象或File对象中的内容. 当读取操作完成时,readyState属性的值会成为DONE,如果设置了onloadend事件处理程序,则调用之.同时,result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容.
+
+这个方法很有用,比如,可以实现图片的本地预览(在线演示):
+
+<!doctype html>
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+<title>Image preview example</title>
+<script type="text/javascript">
+oFReader = new FileReader(), 
+rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+
+oFReader.onload = function (oFREvent) {
+  document.getElementById("uploadPreview").src = oFREvent.target.result;
+};
+
+function loadImageFile() {
+  if (document.getElementById("uploadImage").files.length === 0) { return; }
+  var oFile = document.getElementById("uploadImage").files[0];
+  if (!rFilter.test(oFile.type)) { alert("You must select a valid image file!"); return; }
+  oFReader.readAsDataURL(oFile);
+}
+</script>
+</head>
+
+<body onload="loadImageFile();">
+  <form name="uploadForm">
+    <table>
+      <tbody>
+        <tr>
+          <td>
+          <img id="uploadPreview" style="width: 100px; height: 100px;" src="" alt="Image preview" /></td>
+          <td><input id="uploadImage" type="file" name="myPhoto" onchange="loadImageFile();" /></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><input type="submit" value="Send" /></p>
+  </form>
+</body>
+</html>

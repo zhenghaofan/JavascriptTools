@@ -1,0 +1,7 @@
+DragEvent:
+当一个元素或者文本选择被拖拽时候，拖拽事件就被触发(每几百毫秒)，一般作为函数的参数e
+
+属性：
+target 拖动的元素
+type 事件类型（drag）
+dataTransfer

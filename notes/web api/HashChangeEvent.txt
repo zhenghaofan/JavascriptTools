@@ -1,0 +1,3 @@
+当URL中的片段标识符发生改变时触发（URL中紧跟'#'号的部分，包括‘#’号）
+window.onhashchange = funcRef;
+window.addEventListener("hashchange", funcRef, false);

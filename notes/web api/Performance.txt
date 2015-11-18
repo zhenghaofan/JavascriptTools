@@ -1,0 +1,10 @@
+Performance 接口包含了当前页面加载相关的性能信息.
+
+该对象可以从 Window.performance  这个只读属性得到.
+
+属性：
+timing是一个 PerformanceTiming 对象包含了页面加载时间相关的性能信息。
+navigation是一个 PerformanceNavigation对象代表了页面浏览上下文的导航信息，比如大量获取资源的重定向。
+
+方法：
+now()返回一个 DOMHighResTimeStamp 类实例表示距离页面开始请求到现在相差的毫秒数

@@ -1,0 +1,20 @@
+Location接口表示其关联的对象所展示的页面的地址等信息，对该对象的修改会反映到关联的对象上。 
+
+属性：
+href:包含整个URL
+protocol:包含URL对应协议的一个DOMString，最后有一个":"
+host:包含域名的一个DOMString，可能在该串最后带有一个":"并跟上URL的端口号
+hostname:包含URL域名的一个DOMString
+port:包含端口号的一个DOMString
+pathname:包含URL中路径部分的一个DOMString，开头有一个“/"。
+search:包含URL参数的一个DOMString，开头有一个“?”。
+hash:包含块标识符的DOMString，开头有一个“#”。
+username:包含URL中域名前的用户名的一个DOMString。
+password:包含URL域名前的密码的一个 DOMString。
+origin:包含页面来源的域名的标准形式DOMString。
+
+方法：
+assign()
+reload()
+replace()
+toString()

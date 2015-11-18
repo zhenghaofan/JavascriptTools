@@ -1,0 +1,32 @@
+Node是一个接口,有很多种类型的DOM元素继承于它。
+下面这些类型的元素继承了该接口的所有属性和方法：
+
+Document, Element, Attr, CharacterData (Text, Comment,CDATASection继承该类型), ProcessingInstruction, DocumentFragment, DocumentType, Notation, Entity, EntityReference
+
+属性：
+attributes
+baseURI
+childNodes返回NodeList对象
+firstChild返回当前节点在DOM树中的第一个子节点, 如果没有子节点,则返回 null
+lastChild
+localName
+namespaceURI
+nextSibling
+nodeName
+nodePrincipal
+nodeType
+nodeValue
+ownerDocument
+parentNode
+parentElement
+prefix
+previousSibling
+textContent
+
+方法：
+appendChild()将一个节点插入到指定的父节点的最末尾处(也就是成为了这个父节点的最后一个子节点).
+cloneNode()返回调用该方法的节点的一个副本.
+insertBefore()在当前节点的某个子节点之前再插入一个子节点。
+removeChild()从某个父节点中移除指定的子节点,并返回那个子节点.
+replaceChild()用指定的节点替换当前节点的一个子节点，并返回被替换掉的节点
+normalize() 方法移除空的文本节点，并连接相邻的文本节点

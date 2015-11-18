@@ -1,0 +1,21 @@
+HTML canvas元素接口
+DOM canvas元素暴露了HTMLCanvasElement接口,该接口提供了用来操作一个canvas元素布局和呈现的属性和方法.HTMLCanvasElement接口继承了element接口的属性和方法.
+
+属性：
+width,height
+
+方法：
+getContext()返回canvas的绘制上下文,如果指定的上下文ID不支持,则返回null.一个绘制上下文可以让你在canvas上绘图.目前可接受的参数有"2d"和"experimental-webgl"."experimental-webgl"上下文只在那些实现了WebGL的浏览器上可用.调用getContext("2d")会返回一个 CanvasRenderingContext2D对象,调用getContext("experimental-webgl")会返回一个WebGLRenderingContext对象.
+
+toDataURL()返回一个data: URL,根据type参数指定的类型将包含在canvas中的图片文件编码成字符串形式, type参数的默认值为image/png,Chrome支持image/webp类型.
+如：
+function test() {
+ var canvas = document.getElementById("canvas");
+ var url = canvas.toDataURL();
+ 
+ var newImg = document.createElement("img");
+ newImg.src = url;
+ document.body.appendChild(newImg);
+}
+
+toBlob()返回一个Blob对象,表示了包含在该canvas中的图片文件,这个文件可能缓存在硬盘上,也可能存储在内存中

@@ -1,0 +1,20 @@
+一个EventTarget是一个可以接受DOM事件且能绑定事件监听器的对象.最常见的EventTarget就是DOM元素对象,另外,还有一些不是DOM元素的对象也能成为EventTarget,比如document, window, XMLHttpRequest,等等.
+
+三大方法：
+addEventListener(type,listner funciton,useCapture)
+useCapture  可选
+如果值为true， useCapture 表示用户希望发起捕获。 在发起捕获之后， 只要Dom子树下发生了该事件类型，都会先被派发到该注册监听器，然后再被派发到Dom子树中的注册监听器中。并且向上冒泡的事件不会触发那些发起捕获的事件监听器。如果没有指定， useCapture 默认为false 。
+在IE 9之前，你必须使用attachEvent 而不是使用标准的方法addEventListener, 使用attachEvent方法有个缺点，是this 的值会变成 window 对象而不是触发事件的元素。
+
+removeEventListener(type,listner,useCapture)
+
+dispatchEvent(event)向一个指定的 EventTarget 派发一个事件(dispatches an Event),  以合适的顺序触发受影响的 EventListeners。(invoking the affected EventListeners in the appropriate order) 标准事件处理规则(包括事件捕获和可选的冒泡过程)通过手动的使用dispatchEvent()方法作用于被派发的事件。
+
+例子：
+var event = new Event('build');
+
+// Listen for the event.
+elem.addEventListener('build', function (e) { ... }, false);
+
+// Dispatch the event.
+elem.dispatchEvent(event);

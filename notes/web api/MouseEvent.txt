@@ -1,0 +1,5 @@
+构造函数：new MouseEvent()
+属性：
+altKey,ctrlKey,shiftKey,metaKey(mac是meta,windows是alt)
+clientX,clientY Dom中的坐标
+screenX,screenY 屏幕坐标

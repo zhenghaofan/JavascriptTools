@@ -1,0 +1,6 @@
+拥有方法：
+DOMImplementation.createDocument()：
+创建一个文档
+
+DOMImplementation.createDocumentType()：
+创建一个DocumentType对象

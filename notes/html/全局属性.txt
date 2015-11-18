@@ -1,0 +1,64 @@
+全局属性适用于所有的HTML元素
+
+accesskey
+这个属性提供了一种使用快捷键访问当前元素的途径。它是用一个字符（单个Unicode code）列表的独立规范构成。
+
+class
+这个属性是一个element的class的独立规范列表。class允许css和javascript通过class选择器或者类似下面的DOM方法来选择和访问元素
+
+contenteditable
+HTML5 :这个可枚举的熟悉表示这个element可以被用户编辑。如果是这样，浏览器会修改widget让它允许编辑。这个属性必须拥有以下值中的其中一个：
+true 或者空字符串,表明这个element可编辑;
+false, 表明这个element一定不能被编辑.
+如果这个属性没有被设置，他的默认值会继承他父element的。
+
+contextmenu
+HTML5 这个属性和这个新规范WHATWG HTML Living Standard
+contextmenu有关系.一个context menu是一个菜单，出现在用户的交互里，比如一次右击。HTML5允许我们自定义这个菜单。这个几个实现的例子，包含了嵌套的菜单
+
+data-*
+HTML5 这类的属性，被称为自定义属性，允许HTML与和它对应DOM表现形式之间的专有信息交换，这或许对script来说有用。这样被设置了这个属性的element就可以通过的HTMLElement的接口访问所有的自定义数据。HTMLElement.dataset属性提供了访问它们的权限。
+
+dir
+这个可枚举属性表明element的文本方向。它可以有以下值：
+ltr, left to right，适用于从左向右写的语言（比如：英语）；
+rtl, right to left，适用于从右向左写的语言（比如：阿拉伯语）
+auto, 由代理决定。用一个最基础的算法来解析element中的字符，如果发现有一个字符具有很强的方向性，那么就把这个方向作为整个element的方向。 
+
+draggable
+这个可枚举的属性决定一个element是否能够被拖动，可以使用Drag and Drop API。它的能使用的值如下：
+true, 表示这个element可以被拖动
+false, 表示这个值不可以被拖动
+如果这个属性没有被设置，默认是auto,这就意味着它的行为默认由浏览器定义。
+
+hidden
+这个布尔（Boolean）属性表示element还没有或是不再存在，当然这都是相对的。例如，你经常在页面上使用隐藏element,只有在登录处理完成后才可以被使用。浏览器不渲染这样的element。
+
+id
+这个属性是唯一的标识，它在整个document里应该是唯一的。当需要链接（使用片段标识符，锚点），执行脚本，控制样式时，可以用它来定位识别元素。
+
+spellcheck
+HTML5 这个可枚举的属性定义element是否检查拼写错误。它的值可以是以下：
+true, 表示如果可能的话，element应该被检查拼写错误；
+false, 表示element不应该检查拼写错误；
+如果这个属性没有被设置，他默认的值是element的类型以及浏览器定义的。它也可能是 inherited,这意味着element的元素内容将被检查拼写错误，如果离它最近的祖先元素有spellcheck并且值为true。
+
+lang
+这个属性用于定义element的语言。
+
+style
+这个属性包含CSS样式声明，被应用到元素上
+
+tabindex
+这个整数类型的属性决定element是否可以获得焦点，如果它参与到排序的键盘导航，就可以定位它。它可能需要几个值：
+负数意味这element不可以获得焦点，也不可以通过排序的键盘导航到达；
+0意味着element可以通过排序的键盘导航到达，但是相对顺序取决于平台惯例；
+一个正数意味着可以通过排序的键盘导航获得焦点并到达。相对顺序去决议该属性的值，按照tabindex的增值排序。如果几个element有相同的tabindex,他们的相对顺序取决于他们在document中的位置。
+在排序的键盘导航单上，如果一个元素的tabindex的值是一个0或者无效值或没有该属性，那么它应该被放在值是正数的element后边。
+
+title
+这个属性包含的的是文本信息，这信息代表element自己包含的内容的公告。
+Link: 关于被链接文档的一个标题或一段描述；
+和图片类似的媒体element:一段描述或相关的可信度；
+Paragraph: 脚注活评论；
+Quotation: 关于作者等一些信息。

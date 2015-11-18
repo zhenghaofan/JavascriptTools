@@ -1,0 +1,27 @@
+MutationObserver给开发者们提供了一种能在某个范围内的DOM树发生变化时作出适当反应的能力
+
+方法：
+observe()
+disconnect()
+takeRecords()
+
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
+
+// 选择目标节点
+var target = document.querySelector('#some-id');
+ 
+// 创建观察者对象
+var observer = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    console.log(mutation.type);
+  });    
+});
+ 
+// 配置观察选项:
+var config = { attributes: true, childList: true, characterData: true }
+ 
+// 传入目标节点和观察选项
+observer.observe(target, config);
+ 
+// 随后,你还可以停止观察
+observer.disconnect();

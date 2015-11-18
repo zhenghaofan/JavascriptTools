@@ -1,0 +1,12 @@
+Storage 提供了访问特定域名下的会话存储（session storage）或本地存储（local storage）的功能，实现接口的有sessionStorage,localStorage
+
+属性：
+length表示存储在 Storage 对象中的数据项数量
+
+方法：
+key()接受一个数值 n 作为参数，并返回存储中的第 n 个键名。
+getItem()接受一个键名作为参数，返回键名对应的值。
+setItem()接受一个键名和值作为参数，将会把键值对添加到存储中，如果键名存在，则更新其对应的值。
+removeItem()接受一个键名作为参数，并把该键名从存储中删除
+clear()清空存储中的所有键名
+

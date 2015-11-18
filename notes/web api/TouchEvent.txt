@@ -1,0 +1,8 @@
+TouchEvent 是一类描述手指在触摸平面（触摸屏、触摸板等）的状态变化的事件。
+
+属性：
+changedTouches 一个 TouchList 对象，包含了代表所有从上一次触摸事件到此次事件过程中，状态发生了改变的触点的 Touch 对象。只读属性
+targetTouches 一个 TouchList 对象，是包含了如下触点的 Touch 对象：触摸起始于当前事件的目标 element 上，并且仍然没有离开触摸平面的触点. 只读属性.
+touches 一 个 TouchList 对象，包含了所有当前接触触摸平面的触点的 Touch 对象，无论它们的起始于哪个 element 上，也无论它们状态是否发生了变化。只读属性.
+type 触摸事件的类型：
+target 此 次触摸事件的目标 element 。这个目标元素对应 TouchEvent.changedTouches 中的触点的起始元素（在之后的事件类型中有说明）

@@ -1,0 +1,51 @@
+<template> 是一种机制，允许包含加载页面时不渲染、但又可以随后通过 JavaScript 实例化的客户端内容。可以将模板视作为存储在页面上稍后使用的一小段内容。尽管不会渲染，但解析器会在加载页面的时候处理 <template> 元素中的内容来确保它是有效的
+
+一般来说，可以通过判断 content 属性是否存在来判断浏览器是否支持 <template> 元素。
+
+例如：
+<table id="producttable">
+  <thead>
+    <tr>
+      <td>UPC_Code</td>
+      <td>Product_Name</td>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- existing data could optionally be included here -->
+  </tbody>
+</table>
+
+<template id="productrow">
+  <tr>
+    <td class="record"></td>
+    <td></td>
+  </tr>
+</template>
+
+<script>
+if ('content' in document.createElement('template')) {
+
+  // Instantiate the table with the existing HTML tbody and the row with the template
+  var t = document.querySelector('#productrow'),
+  td = t.content.querySelectorAll("td");
+  td[0].textContent = "1235646565";
+  td[1].textContent = "Stuff";
+
+  // Clone the new row and insert it into the table
+  var tb = document.getElementsByTagName("tbody");
+  var clone = document.importNode(t.content, true);
+  tb[0].appendChild(clone);
+  
+  // Create a new row
+  td[0].textContent = "0384928528";
+  td[1].textContent = "Acme Kidney Beans";
+
+  // Clone the new row and insert it into the table
+  var clone2 = document.importNode(t.content, true);
+  tb[0].appendChild(clone2);
+
+} else {
+  // Find another way to add the rows to the table because 
+  // the HTML template element is not supported.
+}
+</script>

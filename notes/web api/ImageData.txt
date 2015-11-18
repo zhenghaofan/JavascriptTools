@@ -1,0 +1,10 @@
+ImageData 接口描述 <canvas> 元素的一个隐含像素数据的区域。
+
+使用 ImageData() 构造函数创建或者使用和 canvas 在一起的 CanvasRenderingContext2D 对象的创建方法： 
+createImageData() 和 getImageData()。
+
+属性：
+data描述了一个一维数组，包含以 RGBA 顺序的数据，数据使用  0 至 255（包含）的整数表示。 
+
+height使用像素描述 ImageData 的实际高度
+width使用像素描述 ImageData 的实际宽度

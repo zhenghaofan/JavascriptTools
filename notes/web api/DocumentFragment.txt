@@ -1,0 +1,10 @@
+DocumentFragment描述了一个没有父节点的最小化的文档对象
+
+很多方法可以使用文档片段作为参数, (例如, 任何 Node 接口的方法比如 Node.appendChild 和 Node.insertBefore), 这种情况下被添加(append)或被插入(inserted)的是片段所有子节点, 而非片段本身.
+
+ <template> 元素在其 HTMLTemplateElement.content 属性中包含一个 DocumentFragment.
+
+ 可以使用document.createDocumentFragment 方法或者构造函数来创建一个空的 DocumentFragment.
+
+ 具有方法：
+querySelector(),querySelectorAll(),getElementById()

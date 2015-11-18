@@ -1,0 +1,108 @@
+Document
+
+使用window.document或document获得，在iframe中使用contentDocument获得，节点可通过ownerDocument获得
+
+拥有属性：
+async: 与load一起使用时，表示是否异步请求
+
+doctype: 返回文档的DTD；使用DOMImplementation.createDocumentType可以创建一个DocumentType对象
+
+documentElement：只读属性，返回当前文档的根元素，一般是html元素
+应该使用 document.documentElement, 而不是 document.firstChild 来获取根元素。
+
+implementation：返回当前文档的DOMImplementation对象
+
+activeElement: 返回当前页面中获得焦点的元素
+
+anchors: 返回当前文档中的所有锚点元素.
+
+body: 返回body元素；如果文档拥有frameset，则返回最外层的frameset元素
+
+cookie: 获取与设置当前文档的cookie
+
+defaultView返回当前document关联的window对象；IE9以下不支持
+
+designMode:控制文档是否可编辑，取值on,off
+
+styleSheets返回一个由 StyleSheet 对象组成的 StyleSheetList，每个 StyleSheet 对象都是文档中链接或嵌入的样式表
+
+dir的本质是DOMString，代表了文档的文字朝向，是从左到右ltr(默认)还是从右到左；
+
+domain获取/设置当前文档的原始域部分
+
+forms返回一个包含了当前文档中的所有 form 元素的集合 (一个HTMLCollection对象).
+
+head返回当前文档中的 <head> 元素。如果有多个 <head> 元素，则返回第一个。
+
+images返回当前文档中所有 image 元素的集合.
+
+links返回一个包含文档中所有具有 href 属性值的 <a> 元素的集合
+
+location返回一个 Location 对象，包含有文档的 URL 相关的信息，并提供了改变该 URL 和加载其他 URL 的方法。
+
+readyState文档正在加载时,返回"loading",当文档结束渲染但在加载内嵌资源时,返回"interactive",当文档加载完成时,返回"complete".
+
+referrer返回跳转或打开到当前页面的那个页面的URI
+
+scripts返回一个HTMLCollection对象,包含了当前文档中所有<script>元素的集合.
+
+URL只读，返回当前文档的URL地址
+
+Handler:
+document.onreadystatechange = function(){
+	
+}
+
+方法：
+createAttribute 方法创建并返回一个新的属性节点；返回值是一个Attr类型的节点. 你可以通过为该节点的nodeValue属性赋值来设置该属性节点的属性值,也可以使用常用的 setAttribute() 方法来替代该方法
+
+createDocumentFragment()创建一个空的DocumentFragment
+
+createElement()创建Element对象
+
+createEvent('type')创建Event对象：
+// Create the event.
+var event = document.createEvent('Event');
+
+// Define that the event name is 'build'.
+event.initEvent('build', true, true);
+
+// Listen for the event.
+elem.addEventListener('build', function (e) {
+  // e.target matches elem
+}, false);
+
+// target can be any Element or other EventTarget.
+elem.dispatchEvent(event);
+
+createTextNode创建一个文本节点；可加参数，为文本内容
+
+createRange()返回一个Range对象
+
+elementFromPoint()返回当前文档上处于指定坐标位置最顶层的DOM元素, 坐标是相对于包含该文档的浏览器窗口的左上角为原点来计算的, 通常 x 和 y 坐标都应为正数，不需要加单位px
+
+getElementsByClassName(),getElementsByTagName(),getElementById(),getElementsByName()
+
+querySelector()返回当前文档中第一个匹配特定选择器的元素（使用深度优先，前序遍历规则遍历所有文档节点）
+
+querySelectorAll()返回所有
+
+open(),write():
+// 打开一个文档,向其中写入数据
+// 写入文档内容
+// 关闭文档
+document.open();
+document.write("<p>文档内容</p>");
+document.close();
+
+execCommand(),这个方法的命令大多数是对文档选中区域的操作 (如bold, italics等), 也可以插入一个元素(如增加一个a链接) 或者修改一个完整行 (如缩进).。当元素被设置了contentEditable，通过执行execCommand 方法可以对当前活动元素进行很多操作。
+
+getSelection()返回一个 Selection 对象，表示文档中当前被选择的文本，等于window.getSelection()
+
+hasFocus()如果当前文档的活动元素获得了焦点,返回true,否则返回false
+
+write()向一个被 document.open() 打开的文档流中写入一串文本。
+
+writeln()向文档中写入一串文本，并紧跟着一个换行符
+
+currentScript()返回其所包含的脚本正在被执行的 <script> 元素.
