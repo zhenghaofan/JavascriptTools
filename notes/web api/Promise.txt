@@ -1,0 +1,67 @@
+该新特性属于 ECMAScript 2015（ES6）规范
+
+语法
+new Promise(executor);
+executor
+带有 resolve 、reject两个参数的函数对象。 第一个参数用在处理执行成功的场景，第二个参数则用在处理执行失败的场景。 一旦我们的操作完成即可调用这些函数。
+
+new Promise(function(resolve, reject) { ... });
+
+Promise 对象是一个返回值的代理，这个返回值在promise对象创建时未必已知。它允许你为异步操作的成功或失败指定处理方法。 这使得异步方法可以像同步方法那样返回值：异步方法会返回一个包含了原返回值的 promise 对象来替代原返回值。
+
+Promise对象有以下几种状态:
+
+pending: 初始状态, 非 fulfilled 或 rejected.
+fulfilled: 成功的操作.
+rejected: 失败的操作.
+pending状态的promise对象既可转换为带着一个成功值的fulfilled 状态，也可变为带着一个失败信息的 rejected 状态。当状态发生转换时，promise.then绑定的方法（函数句柄）就会被调用。(当绑定方法时，如果 promise对象已经处于 fulfilled 或 rejected 状态，那么相应的方法将会被立刻调用， 所以在异步操作的完成情况和它的绑定方法之间不存在竞争条件。)
+
+因为Promise.prototype.then和 Promise.prototype.catch方法返回 promises对象, 所以它们可以被链式调用—— 一种被称为 composition 的操作。
+
+如果一个promise对象处在fulfilled或rejected状态而不是pending状态，那么它也可以被称为settled状态。你可能也会听到一个术语resolved ，它表示promise对象处于settled状态，或者promise对象被锁定在了调用链中。
+
+属性：
+length 长度
+prototype Promise的原型
+
+方法：
+all()返回一个promise对象，当iterable参数里所有的promise都被解决后，该promise也会被解决
+
+race()当iterable参数里的任意一个子promise被成功或失败后，父promise马上也会用子promise的成功返回值或失败详情作为参数调用父promise绑定的相应句柄，并返回该promise对象。
+
+reject()调用Promise的rejected句柄，并返回这个Promise对象。
+
+resolve()用成功值value解决一个Promise对象。如果该value为可继续的（thenable，即带有then方法），返回的Promise对象会“跟随”这个value，采用这个value的最终状态；否则的话返回值会用这个value满足（fullfil）返回的Promise对象。
+
+Promise原型：
+方法：
+Promise.prototype.then()
+它有两个参数，分别为Promise在 success 和 failure 情况下的回调函数。
+
+语法
+p.then(onFulfilled, onRejected);
+
+onFulfilled
+一个 Function, 当 Promise 为 fulfilled 时调用. 该函数有一个参数, 为成功的返回值.
+onRejected
+一个 Function, 当 Promise 为 rejected 时调用. 该函数有一个参数, 为失败的原因.
+
+p.then(function(value) {
+   // 满足
+  }, function(reason) {
+  // 拒绝
+});
+
+Promise.prototype.catch()
+catch() 方法只处理Promise被拒绝的情况，并返回一个Promise。该方法的行为和调用Promise.prototype.then(undefined, onRejected)相同。
+
+语法
+p.catch(onRejected);
+
+p.catch(function(reason) {
+   // 拒绝
+});
+参数
+
+onRejected
+当Promise被拒绝时调用的Function。该函数调用时会传入一个参数：拒绝原因。

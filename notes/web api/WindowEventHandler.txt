@@ -1,0 +1,14 @@
+WindowEventHandlers给window,htmlelement等提供了事件处理接口
+
+一些属性：
+onbeforeunload
+onhashchange
+onmessagechange
+onpagehide
+onpageshow
+onpopstate当前活动历史项(history entry)改变会触发popstate事件。调用history.pushState()创建新的历史项(history entry)，或调用history.replaceState()替换新的历史项(history entry)，那么popstate事件的state属性会包含历史项(history entry)状态对象(state object)的拷贝。
+需要注意的是调用history.pushState()或history.replaceState()不会触发popstate事件。只有在做出浏览器动作时，才会触发该事件，如用户点击浏览器的回退按钮（或者在Javascript代码中调用history.back()）
+
+onresize
+onstorage
+onunload

@@ -1,0 +1,87 @@
+window 对象表示一个包含DOM文档的窗口，其 document 属性指向窗口中载入的 DOM文档 。使用 document.defaultView 属性可以获取指定文档所在窗口。
+每个标签具有自己的 window 对象
+
+属性：
+applicationCache 提供对窗口的离线资源的访问。
+crypto
+document
+frameElement 嵌入的窗口元素
+frames 当前窗口的子frame数组
+fullScreen 是否全屏
+history 
+innerHeight 浏览器窗口的视口（viewport）高度（以像素为单位），如果存在水平滚动条，则包括它。
+outerHeight 整个浏览器窗口的高度，包括地址栏，书签栏等等
+innerWidth 浏览器视口（viewport）宽度（单位：像素），如果存在垂直滚动条则包括它。
+length 子frame的数量
+location
+locationbar 地址栏
+localStorage
+menubar 菜单栏
+name 
+navigator 浏览器
+opener 打开当前窗口的那个窗口的引用
+scrollX 返回文档/页面水平方向滚动的像素值。
+scrollY 返回文档在垂直方向已滚动的像素值。
+sessionStorage
+parent返回当前窗口的父窗口对象.如果一个窗口没有父窗口,则它的 parent 属性为自身的引用.如果当前窗口是一个 <iframe>, <object>, 或者 <frame>,则它的父窗口是嵌入它的那个窗口
+performance
+screen返回与显示屏有关对象
+screenX返回浏览器左边界到操作系统桌面左边界的水平距离。
+screenY返回浏览器顶部距离系统桌面顶部的垂直距离
+scrollX返回文档/页面水平方向滚动的像素值。
+scrollY返回文档/页面垂直方向滚动的像素值
+self 当前窗口对象
+top返回窗口体系中的最顶层窗口的引用。
+
+方法：
+alert()
+blur()离开焦点
+close()
+confirm()
+dispatchEvent()触发事件
+dump()
+focus()
+getComputedStyle(elem,伪元素)得出所有在应用有效的样式和分解任何可能会包含值的基础计算后的元素的CSS属性值,返回的样式是一个CSSStyleDeclaration 对象。
+如：
+<style>
+ h3:after {
+   content: ' rocks!';
+ }
+</style>
+
+<h3>generated content</h3> 
+
+<script>
+  var h3       = document.querySelector('h3'), 
+      result   = getComputedStyle(h3, ':after').content;
+</script>
+
+getSelction()返回一个 Selection 对象，表示用户选择的文本。
+moveBy() 变化的像素
+moveTo() 目标像素
+open()
+openDialog()
+postMessage() 是一个用于安全的使用跨源通信的方法。通常，不同页面上的脚本只在这种情况下被允许互相访问，当且仅当执行它们的页面所处的位置使用相同的协议（通常都是 http）、相同的端口（http默认使用80端口）和相同的主机（两个页面的 document.domain 的值相同）。 在正确使用的情况下，window.postMessage 提供了一个受控的机制来安全地绕过这一限制。
+
+window.postMessage(message, targetOrigin), 调用时，挂起的脚本必须执行完成才会将 MessageEvent 派遣至目标window (例如：如果一个事件处理程序调用了window.postMessage，剩余的事件处理程序就会挂起超时等).  MessageEvent 有消息类型, 它被设置为第一个参数值提供给window.postMessage的data属性， 对应的window调用window.postMessage的时候，window.postMessage主文档的来源的origin属性被称为源属性，指哪个调用window.postMessage的窗口。 (事件的其他标准属性都存在与对应的预期值.)
+
+其他window可以监听派遣的message:
+window.addEventListener("message", receiveMessage, false);
+
+function receiveMessage(event)
+{
+  if (event.origin !== "http://example.org:8080")
+    return;
+
+  // ...
+}
+
+print()打印
+prompt()显示一个对话框,对话框中包含一条文字信息,用来提示用户输入文字.
+resizeBy()
+resizeTo()
+scroll(x,y) x值表示你想要置于左上角的像素点的横坐标,y值表示你想要置于左上角的像素点的纵坐标。
+scrollBy()
+scrollTo()
+scrollByPages()在当前文档页面按照指定的页数翻页
+setInterval()

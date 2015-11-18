@@ -5,4 +5,11 @@ changedTouches 一个 TouchList 对象，包含了代表所有从上一次触摸
 targetTouches 一个 TouchList 对象，是包含了如下触点的 Touch 对象：触摸起始于当前事件的目标 element 上，并且仍然没有离开触摸平面的触点. 只读属性.
 touches 一 个 TouchList 对象，包含了所有当前接触触摸平面的触点的 Touch 对象，无论它们的起始于哪个 element 上，也无论它们状态是否发生了变化。只读属性.
 type 触摸事件的类型：
+touchstart 触摸时触发
+touchend 触点移除时触发
+touchmove 移动触点时触发，当触点的半径、旋转角度以及压力大小发生变化时，也将触发此事件。
+touchenter 触点进入某个element触发
+touchleave 触点离开某个element触发
+touchcancel 触点中断时触发
+
 target 此 次触摸事件的目标 element 。这个目标元素对应 TouchEvent.changedTouches 中的触点的起始元素（在之后的事件类型中有说明）

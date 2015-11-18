@@ -1,0 +1,8 @@
+一个 TouchList 代表一个触摸平面上所有触点的列表; 举例来讲, 如果一个用户用三根手指接触屏幕(或者触控板), 与之相关的TouchList 对于每根手指都会生成一个 Touch 对象, 共计三个.
+
+属性：
+length
+
+方法：
+identifiedTouch()返回第一个Touch
+item()返回第n个Touch对象
