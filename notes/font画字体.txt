@@ -1,0 +1,16 @@
+三种方法：
+1.CSS Sprite
+一般将图片保存为png-24格式，需要确定每个小图标大小，注意图标之间的距离
+
+使用font：
+可以轻松改变图标颜色及其他CSS效果；可扩展性通过改变font-size可以改变图标大小；图标是矢量的，缩放图标不会影响清晰度；兼容所有浏览器
+使用icoMoon
+2.font + html
+	@font-face{
+		font-family:字体名称
+		src:字体路径，字体格式
+		font-weight:
+		font-style:
+	}
+	
+3.font + css

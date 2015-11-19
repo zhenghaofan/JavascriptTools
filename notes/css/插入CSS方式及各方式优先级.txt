@@ -1,0 +1,25 @@
+插入CSS方式：
+内联式、内部式(嵌入head中使用style元素)、外链接式link元素、外链使用@import导入(在style元素中)，如：
+<head>
+      <title>css demo</title>
+      <link rel=stylesheet type="text/css" href="css/name.css" title="cool">
+      <style type="text/css">
+            @import url(css/name2.css);
+            h1 {color:red}
+      </style>
+</head>
+为什么使用@import？
+大部分使用@import方式的人是因为旧的浏览器是不支持@import方式的,这意味着我们可以使用@import来引入只让现代浏览器解析的CSS样式.
+
+link和@import的区别是?
+　　1、老祖宗的差别。link属于XHTML标签，而@import完全是CSS提供的一种方式。link标签除了可以加载CSS外，还可以做很多其它的事情，比如定义RSS，定义rel连接属性等，@import就只能加载CSS了。
+　　2、加载顺序的差别。当一个页面被加载的时候（就是被浏览者浏览的时候），link引用的CSS会同时被加载，而@import引用的CSS会等到页面全部被下载完再被加载。
+　　3、兼容性的差别。由于@import是CSS2.1提出的所以老的浏览器不支持，@import只有在IE5以上的才能识别，而link标签无此问题。
+　　4、使用dom控制样式时的差别。当使用javascript控制dom去改变样式的时候，只能使用link标签，因为@import不是dom可以控制的。
+
+关于头部嵌入式与@import优先级：
+在同一个style中，如<style>p{color:blue;}@import url(red.css)</style>，会显示蓝色，即嵌入式>导入式
+@import与外链式优先级：谁后定义谁生效
+将导入式与外链式统称为外部式，则总优先级为：行内式>嵌入式>外部式，外部式中谁后定义谁生效
+但是：
+如果<head>中存在多个<style>，则优先级由先后顺序决定，只有在同一个<style>中才会出现嵌入式>导入式
