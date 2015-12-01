@@ -14,11 +14,11 @@
 	index++;
 	console.log("领取第"+index+"张");
 	setTimeout(getCoupon, inteval);
-	setTimeout(function(,{
+	setTimeout(function(){
 		var close = document.querySelector('.selector');
-		if(close!= null) close.click();
+		if(close !== null) close.click();
 	}, closeDelay);
-	}
+	};
 	
 	var _scrollTop = 0;
 	var _scrollStep = document.documentElement.clientHeight;//可见区域高度
@@ -34,4 +34,4 @@
 			document.body.scrollTop = _scrollTop;
 		}
 	},500);
-})(window,document)
+})(window,document);

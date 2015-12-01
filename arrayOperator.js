@@ -28,11 +28,11 @@ arr.shift();
 var a = [1,2,3];
 a.slice();//[1,2,3]
 a.slice(0);//[1,2,3]
-a.slice(1);//[2,3]
+a.slice(1);//[2,3],默认是1到末尾
 a.slice(1,2);//[2]
 a.slice(-1);//[3],返回数组的最后一个元素
 a.slice(4);//[]
-a.slice(2,1);//[]
+a.slice(2,1);//[],一般情况第二个必须大于第一个数
 a.slice(2,6);//[3]
 
 function aa(){

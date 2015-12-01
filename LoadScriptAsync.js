@@ -2,7 +2,7 @@
 var urls = [
 	"aa.js",
 	"bb.js"
-]
+];
 function createScript(url){
 	 var script = document.createElement("script");
      script.type = "text/javascript";
@@ -23,7 +23,7 @@ function loadScript(urls,callback){
 					callback();
 				}
 			}
-		}
+		};
 		document.body.appendChild(script);
 	}
 

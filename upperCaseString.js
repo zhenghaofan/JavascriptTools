@@ -1,3 +1,4 @@
+// upper var msg = 'aa-bb-cc'
 function combo(msg){
     var arr=msg.split("-");
     for(var i=1;i<arr.length;i++){
