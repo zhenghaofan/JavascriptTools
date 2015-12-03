@@ -13,6 +13,14 @@ a3 // ['abc']
 a4 // [Array[1]]
 a5 // [1, 2]
 
+var arr = [];
+arr['0'] = 'a';
+arr[1] = 'b';
+arr['foo'] = 'c';
+arr.length //2,arr == ['a','b']
+
+
+
 如果不想创建实例，只是想单纯调用以下这些方法，可以写成 [].method.call(调用对象，参数) 的形式，或者 Array.prototype.method.call(调用对象，参数)的形式。
 
 var a = { a: 1 };

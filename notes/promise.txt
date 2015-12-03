@@ -11,9 +11,6 @@ loadImg('a.jpg', function() {
 });  
 这也就是我们常说的回调金字塔，当异步的任务很多的时候，维护大量的callback将是一场灾难。当今Node.js大热，好像很多团队都要用它来做点东西以沾沾“洋气”，曾经跟一个运维的同学聊天，他们也是打算使用Node.js做一些事情，可是一想到js的层层回调就望而却步。
 
-
-Promise可能大家都不陌生，因为Promise规范已经出来好一段时间了，同时Promise也已经纳入了ES6，而且高版本的chrome、firefox浏览器都已经原生实现了Promise，只不过和现如今流行的类Promise类库相比少些API。
-
 所谓Promise，字面上可以理解为“承诺”，就是说A调用B，B返回一个“承诺”给A，然后A就可以在写计划的时候这么写：当B返回结果给我的时候，A执行方案S1，反之如果B因为什么原因没有给到A想要的结果，那么A执行应急方案S2，这样一来，所有的潜在风险都在A的可控范围之内了。
 
 上面这句话，翻译成代码类似：
@@ -253,3 +250,100 @@ jQuery还实现了done()和fail()方法，其实都是then方法的shortcut。
 我们看到，不管Promise实现怎么复杂，但是它的用法却很简单，组织的代码很清晰，从此不用再受callback的折磨了。
 
 最后，Promise是如此的优雅！但Promise也只是解决了回调的深层嵌套的问题，真正简化JavaScript异步编程的还是Generator，在Node.js端，建议考虑Generator。
+
+==========================================
+
+Promise 对象用于延迟(deferred) 计算和异步(asynchronous ) 计算.。一个Promise对象代表着一个还未完成，但预期将来会完成的操作。 Promise 对象是一个返回值的代理，这个返回值在promise对象创建时未必已知。它允许你为异步操作的成功或失败指定处理方法。 这使得异步方法可以像同步方法那样返回值：异步方法会返回一个包含了原返回值的 promise 对象来替代原返回值。
+一个简单的示例 执行一个动画A，执行完之后再去执行另一个动画B
+    setTimeout(function(){
+        //A动画
+        console.log('A');
+        setTimeout(function() {
+            //B动画
+            console.log('B');
+        },300)
+    },300);
+这里只有两个动画，如果有更多呢，就会看到一堆函数缩进
+
+改进写法：
+浏览器实现方式 可以在支持Promise的版本上运行
+var p = new Promise(function(resolve, reject){
+  setTimeout(function(){
+    //A动画
+    console.log('A');
+    resolve();//一旦标记此promise完成，会调用接下来的then()方法
+  },300);
+});
+
+p.then(function(){
+  setTimeout(function() {
+      //B动画
+      console.log('B');
+  },300);
+});
+另一种写法（jQuery版本）
+jQuery版本的实现
+var deferred = $.Deferred();
+setTimeout(function(){
+  //A动画
+  console.log('A');
+  deferred.resolve();
+},300);
+
+deferred.done(function() {
+  setTimeout(function() {
+    //B动画
+    console.log('B');
+  },300)
+});
+
+Promise中有几个状态：
+pending: 初始状态, 非 fulfilled 或 rejected.
+fulfilled: 成功的操作.
+rejected: 失败的操作.
+这里从pending状态可以切换到fulfill状态（jQuery中是resolve状态），也可以从pengding切换到reject状态，这个状态切换不可逆，且fulfilled和reject两个状态之间是不能互相切换的。
+
+==================================
+问题：
+new Promise(function(resolve){
+    console.log('promise begin')
+    for( var i=0 ; i<10000 ; i++ ){
+        i==5000 && console.log('loop...')
+        i==9999 && resolve()
+    }
+    console.log('promise end')
+}).then(function(){
+    console.log('callback')
+})
+console.log('other...')
+结果：
+promise begin
+loop...
+promise end
+other...
+callback
+疑问：
+Promise 里执行的应该都是同步代码？
+为什么是先打印 other 后打印 callback 呢？
+
+答案：
+then(fn)并不立即执行fn，而是把fn放进一个队列（Promise的Job Queue），这个队列的执行优先级低于JS栈，fn被放入队列后，console.log立即执行，进入调用栈，fn必须等待console.log执行完后才能执行。把代码稍稍改动一下或许可以帮助理解.then(function(){
+    console.log('callback')
+}) // 放入队列，等待调用栈空闲
+
+console.log('other...'); // 放入调用栈，立即执行（阻塞队列）
+
+改成
+
+.then(function(){ （1）
+    console.log('callback')
+}) // 放入队列，等待调用栈空闲
+
+setTimeout(function() { （2）
+  console.log('other...');
+}, 0); // 放入调用队列，在(1)之后
+
+// 执行到此调用栈空出（没有后续语句）
+// 队列中（1）进入调用栈执行
+// 然后是（2）
+// 这个时候就是先输出callback再输出other。

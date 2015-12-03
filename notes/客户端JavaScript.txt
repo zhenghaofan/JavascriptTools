@@ -51,13 +51,3 @@ aaa = aaa. replace(/</g, "&lt;").replace(/>/g,"&gt;");
 HTML5中为iframe标签定义了一个sandbox属性，它允许显示不可信的内容，并自动禁用脚本
 
 拒绝服务攻击：例如无限弹窗或死循环计算占用CPU
-
-框架：jQuery,Prototype,Dojo,YUI...
-
-
-
-
-
-
-
-

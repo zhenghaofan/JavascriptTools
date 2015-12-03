@@ -223,3 +223,13 @@ AA.prototype.getBB = function(){
 当原型属性用来创建原型链时，可以把任何类型的值赋给它（prototype）。 然而将原子类型赋给 prototype 的操作将会被忽略：
 function Foo() {}
 Foo.prototype = 1; // 无效
+
+var b = {
+length:2,
+push:[].push,
+1:'a',
+2:'b'
+};
+b.push('c');
+b.length() //3,b[0]是undefined，b[1]是a,b[2]是c
+
