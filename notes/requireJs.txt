@@ -1,0 +1,27 @@
+遵循AMD规范，实现js文件的异步加载，避免网页失去响应；管理模块之间的依赖性，便于代码的编写和维护。
+使用define定义模块:
+假定现在有一个math.js文件，它定义了一个math模块。那么，math.js就要这样写：
+　　// math.js
+　　define(function (){
+　　　　var add = function (x,y){
+　　　　　　return x+y;
+　　　　};
+　　　　return {
+　　　　　　add: add
+　　　　};
+　　});
+加载方法如下：
+　　// main.js
+　　require(['math'], function (math){
+　　　　alert(math.add(1,1));
+　　});
+
+这个模块还依赖其他模块，那么define()函数的第一个参数，必须是一个数组，指明该模块的依赖性。
+　　define(['myLib'], function(myLib){
+　　　　function foo(){
+　　　　　　myLib.doSomething();
+　　　　}
+　　　　return {
+　　　　　　foo : foo
+　　　　};
+　　});

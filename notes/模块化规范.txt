@@ -23,7 +23,7 @@ var AAA = (function(){
  
 目前流行的模块规范：
 1、CommonJS规范： 服务器端模块的规范，Node.js（Node Modules）采用了这个规范。​Module 1.0已被Module1.1取代。主要包含模块标准和程序包标准。
-​2、CMD规范：浏览器端模块的规范（通用加载规范），遵循Modules/Wrappings规范，贴近 CommonJS Modules/1.1 和 Node Modules 规范。代码比较容易向Node迁移。
+​2、CMD规范：浏览器端模块的规范（通用加载规范），遵循Modules/Wrappings规范，贴近 CommonJS Modules/1.1 和 Node Modules 规范。代码比较容易向Node迁移。有SeaJS。
 3、AMD规范：浏览器端模块的规范(异步加载规范)，有requireJS
 4、ECMAScript6/Harmony 模块规范：JS标准草案。包括可在服务器端和浏览器端使用的Module，一个Module loader，和其他。虽然可以在某种程度上可以尝试一下这样的特性，但是要记住可能用 Harmony 来规划你的系统可能并不是个好主意（只是说目前还不是）。规范发生变化以及潜在的在跨浏览器层面的问题都会带来风险（比如 IE9 可能会要过较长的时间才会消亡），所以在标准最终确定及其覆盖率不成问题之前，你最好还是把注下在 AMD（用于浏览器内运行的模块）与 CommonJS（用于服务器）身上。
  

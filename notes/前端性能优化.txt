@@ -13,6 +13,25 @@
 		
 7.如果节点需要依赖其他资源，例如图片、CSS、视频等，调用资源加载器来加载它们，但是它们是异步的，不会阻碍当前 DOM 树的创建，直到 JavaScript 的资源加载并被 JavaScript 引擎执行后才继续 DOM 树的创建。
 
+====================================
+http属于Tcp/Ip模型中的应用层协议
+
+首先，浏览器找到该网址所指向的IP，然后与其建立TCP连接，
+
+接着向百度服务器提出Get请求，
+
+当服务器接收到我们的请求后，
+
+向我们传送应答信息--百度的页面,
+
+然后断开连接。
+
+浏览器找到该网址所指向的IP，然后与其建立TCP连接
+   1、获取IP。浏览器地址栏中输入"http://www.xxx.edu.cn/"并提交之后，首先它会在DNS本地缓存表中查找，如果有则直接告诉IP地址。如果没有则要求网关DNS进行查找，如此下去，当找到对应的ip后，则返回给浏览器。
+   2、建立TCP连接。当获取到IP之后，就开始与所请求的服务器建立TCP连接，你可以在下图中发现syn,ack，这些标识符就是用来同步用的。
+   3、连接建立后，就向服务器发出http请求
+
+
 渲染过程：
 脚本执行,计算样式，计算布局，绘制，合并绘制层
 只修改不影响布局的css,例如background,color,shadow，可跳过计算布局阶段
@@ -25,13 +44,14 @@
 合并脚本和样式，将所有脚本样式合并为一个；
 CSS Sprite;
 使用base64 url 可以减少一次HTTP请求，在background-image中，是用于图片不是很大，不经常更新， 不能CSS Sprite;
+使用图标字体
 
 可以将Data URL形式的图片存储在CSS样式表中或者localstorage。 而所有浏览器都会积极的缓存CSS文件来提高页面加载效率。
 只要这个图片不是很大，而且不是在CSS文件里反复使用，就可以以Data URL方法呈现图片降低页面的加载时间，改善用户的浏览体验。
 
 2.客户端处理,DOM结构优化：
 CSS顶部，JS底部；
-内容，行为，样式分离；
+内容，行为，样式分离；实现结构、样式、行为分离，独立成文件可以利用浏览器缓存。
 DOM元素的读写分离与批量操作，降低样式计算的范围和复杂度，读取计算所需的DOM属性，执行计算逻辑，批量修改DOM
 JS控制的动画效果 使用requestAnimateFrame代替setTimeout和setInterval；
 提升动画中移动或渐变元素的绘制层，应用了transform|opacity|backface-visibility的元素会独占一个渲染层, 从而跳过绘制阶段；提升动画元素到新的绘制层：
@@ -39,7 +59,7 @@ transform: translateZ(0);
 will-change: auto | scroll-position | contents | opacity | [ transform | left, top ] ; will-change: transform;
 使用ajax响应用户的部分操作而不需刷新页面
 
-CSS渲染、页面重绘以及回流：
+CSS渲染、页面重绘repant以及回流重新布局：
 尽量避免类似.a.b{}.list a{}以及其他一些复杂选择器，以提高整站整体CSS渲染；
 简化CSS reset;
 图片设定固定不响应重绘的尺寸，防止图片过大完全加载；
@@ -51,6 +71,9 @@ img1.aaa.com,img2.aaa.com比img.aaa.com更高效
 
 4.浏览器本地缓存，local Storage
 HTTP头信息缓存，设置Expires响应头过期时间，设置Cache-Control
+http响应头信息Expires、Cache-Control是缓存字段。这里的缓存是指浏览器缓存，缓存过期前不用发起请求。Cache-Control，用于指定缓存指令，缓存指令是单向的（响应中出现的缓存指令在请求中未必会出现），且是独立的（一个消息的缓存指令不会影响另一个消息处理的缓存机制），HTTP1.0使用的类似的报头域为Pragma。
+请求时的缓存指令包括：no-cache（用于指示请求或响应消息不能缓存）、no-store、max-age、max-stale、min-fresh、only-if-cached;
+响应时的缓存指令包括：public、private、no-cache、no-store、no-transform、must-revalidate、proxy-revalidate、max-age、s-maxage.
 
     使用Etag，它是用于验证内容是否改变的被请求变量的实体值；是一个可以与Web资源关联的记号（token）。典型的Web资源可以一个Web页，但也可能是JSON或XML文档。服务器单独负责判断记号是什么及其含义，并在HTTP响应头中将其传送到客户端，如果ETag没改变，则返回状态304然后不返回，这也和Last-Modified一样。
 

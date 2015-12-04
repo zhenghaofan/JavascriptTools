@@ -199,7 +199,7 @@ div.style.top = top + 10 + "px";
 
 下载完html文件 -》构建DOM -》遇到图片image -》发起请求 ->加载完全部图片 -》 dom.onload
                                             |
-                                            |这个点已经DOMContentLoaded
+                                            |这个点已经domcomplete
 
 引入CSS文件后：
                           遇到图片                          
