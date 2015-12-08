@@ -7,4 +7,4 @@ for ( i=0; i<200; i++){
     } , i );
 }
 
-//使用setInterval
+//使用setInterval实现JS动画
