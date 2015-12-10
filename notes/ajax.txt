@@ -91,3 +91,8 @@ $(document).ready(function(){
 1.JSONP
 2.XHR2
 3.服务器代理
+4.跨域脚本API访问
+
+Javascript的APIs中，如 iframe.contentWindow, window.parent, window.open 和 window.opener 允许文档间直接相互引用。当两个文档的源不同时，这些引用方式将对 Window 和 Location对象的访问添加限制。
+
+可以使用window.postMessage 作为替代方案，提供跨域文档间的通讯。
