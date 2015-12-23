@@ -106,3 +106,5 @@ write()向一个被 document.open() 打开的文档流中写入一串文本。
 writeln()向文档中写入一串文本，并紧跟着一个换行符
 
 currentScript()返回其所包含的脚本正在被执行的 <script> 元素.
+
+registerElement()在浏览器注册一个新的自定义元素 ，返回一个构造函数。
