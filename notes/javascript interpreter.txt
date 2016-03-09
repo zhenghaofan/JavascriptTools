@@ -1,27 +1,65 @@
+第一个JavaScript引擎由布兰登·艾克在网景公司开发，用于Netscape Navigator网页浏览器中。引擎的名字叫做SpiderMonkey蜘蛛猴，由C++实现。它自JavaScript 1.5升级以符合ECMA-262版本3。
+
 Mozilla
 
 SpiderMonkey，第一款JavaScript引擎，由Brendan Eich在Netscape Communications时编写，用于Mozilla Firefox 1.0～3.0版本。
+
 Rhino，由Mozilla基金会管理，开放源代码，完全以Java编写。
 TraceMonkey，基于实时编译的引擎，其中部份代码取自Tamarin引擎，用于Mozilla Firefox 3.5～3.6版本。
 JaegerMonkey，德文J&auml;ger原意为猎人，结合追踪和组合码技术大幅提高性能，部分技术借凿了V8、JavaScriptCore、WebKit，用于Mozilla Firefox 4.0以上版本。
 
-Google
-V8，开放源代码，由Google丹麦开发，是Chrome浏览器的一部分。
-
 微软
 Chakra (JScript引擎)，中文译名为查克拉，用于Internet Explorer 9的32位版本。
 
-Opera
-Linear A，用于Opera 4.0～6.1版本。
-Linear B，用于Opera 7.0～9.2版本。
-Futhark，用于Opera 9.5～10.2版本。
-Carakan，由Opera软件公司编写，自Opera10.50版本开始使用。
-其它
+Google
+V8，开放源代码，由Google丹麦开发，是Chrome浏览器的一部分。
+V8在运行之前将JavaScript编译成了机器码，而非字节码或是解释执行它，以此提升性能。更进一步，使用了如内联缓存（inline caching）等方法来提高性能。有了这些功能，JavaScript程序与V8引擎的速度媲美二进制编译
 
-KJS，KDE的ECMAScript/JavaScript引擎，最初由Harri Porten开发，用于KDE项目的Konqueror网页浏览器中。
-Narcissus，开放源代码，由Brendan Eich编写（他也参与编写了第一个SpiderMonkey）。
-Tamarin，由Adobe Labs编写，Flash Player 9所使用的引擎。
-Nitro（原名SquirrelFish），为Safari 4编写。
+JavaScript解释器通常可以包含四个组成部分：
+
+词法分析器（Lexical Analyser）
+句法解析器（Syntax Parser）
+字节码生成器（Bytecode generator）
+字节码解释器（Bytecode interpreter）
+
+词法分析器
+词法分析器的作用，是将一行行的源码拆解成一个个词义单位（token）。所谓“词义单位”，指的是语法上不可能再分的、最小的单个字符或字符组合。
+
+首先，词法分析器会扫描（scanning）代码，提取词义单位；然后，会进行评估（evaluating），判断词义单位属于哪一类的值。
+
+var sum = 30;
+
+// 词法分析后的结果
+[
+  "var" : "keyword",
+  "sum" : "identifier",
+  "="   : "assignment",
+  "30"  : "integer",
+  ";"   : "eos" (end of statement)
+]
+上面代码中，源代码经过词法分析后，返回一组词义单位，以及它们各自的词类。
+
+句法解析器
+句法解析器的作用，是将上一步生成的数组，根据语法规则，转为抽象语法树（Abstract Syntax Tree，简称AST）。
+如果源码符合语法规则，这一步就会顺利完成，生成一个抽象语法树；如果源码存在语法错误，这一步就会终止，抛出一个“语法错误”。
+
+{
+  operation: "=",
+  left: {
+    keyword: "var",
+    right: "sum"
+  }
+  right: "30"
+}
+上面代码中，抽象语法树的一个节点是赋值操作符（=），它两侧的词义单位，分别成左侧子节点和右侧子节>点。
+
+通常，这一步是整个JavaScript代码执行过程中最慢的。
+
+字节码生成器
+字节码生成器的作用，是将抽象语法树转为JavaScript引擎可以执行的二进制代码。目前，还没有统一的JavaScript字节码的格式标准，每种JavaScript引擎都有自己的字节码格式。最简单的做法，就是将语义单位翻成对应的二进制命令。
+
+字节码解释器
+字节码解释器的作用是读取并执行字节码。
 
 
 js的引擎是单线程执行的，也就是说在js的进程时间线中同一时间只有一个线程在执行，
@@ -47,7 +85,7 @@ js的引擎是单线程执行的，也就是说在js的进程时间线中同一�
 ·线程可能会给程序带来更多“bug”，因此要小心使用。
 ·线程的中止需要考虑其对程序运行的影响。
 ·通常块模型数据是在多个线程间共享的，需要防止线程死锁情况的发生。
-[2] 
+[2]
 一些线程模型的背景
 可以重点讨论一下在Win32环境中常用的一些模型。
 ·单线程模型
@@ -80,7 +118,7 @@ js的引擎是单线程执行的，也就是说在js的进程时间线中同一�
 
 
 先看下两个例子
-1.简单的settimeout： 
+1.简单的settimeout：
 setTimeout(function () { while (true) { } }, 1000);
 setTimeout(function () { alert('end 2'); }, 2000);
 setTimeout(function () { alert('end 1'); }, 100);
@@ -92,10 +130,10 @@ alert('end');
 
 --初始化一个简单的js的计时器，一段时间后，才触发并执行回调函数。 setTimeout 返回一个唯一id,可用这个id来取消这个计时器。
 var id = setTimeout(fn,delay);
- 
+
 --类似于setTimeout,不一样的是，每隔一段时间，会持续调用回调fn，直到被取消
 var id = setInterval(fn,delay);
- 
+
 --传入一个计时器的id,取消计时器。
 clearInterval(id);
 clearTimeout(id);
@@ -104,7 +142,7 @@ clearTimeout(id);
 
 ②    JavaScript引擎用单线程运行也是有意义的,单线程不必理会线程同步这些复杂的问题,问题得到简化。
 
- 
+
 
 js引擎实现原理：
 
@@ -116,7 +154,7 @@ js引擎实现原理：
 
 　　这个图表中有许多数据信息等着我们去理解，当你完全理解了这个图，你会对js的异步运行机制（即JavaScript引擎如何实现异步事件）有很好的了解。这个图是一维的，垂直线上是以毫秒计位，蓝色块代表被划分的不同的js区域执行代码。例如，第一个JS区块执行了18毫秒，鼠标点击事件被阻塞了将近11毫秒，等等。
 
-　　由于JavaScript引擎同一时间只执行一段代码（这是由JavaScript单线程的性质决定的），所以每个JS代码块阻塞了其它异步事件的进行。这意味着当一个异步事件（像鼠标点击、计时器、Ajax）发生时，这些事件的回调函数将排在队列后面等待执行（如何排队完全取决于各浏览器，而我们可以忽视它们内部差异，作一个简化处理）。 
+　　由于JavaScript引擎同一时间只执行一段代码（这是由JavaScript单线程的性质决定的），所以每个JS代码块阻塞了其它异步事件的进行。这意味着当一个异步事件（像鼠标点击、计时器、Ajax）发生时，这些事件的回调函数将排在队列后面等待执行（如何排队完全取决于各浏览器，而我们可以忽视它们内部差异，作一个简化处理）。
 
 　　我们首先从第一个JS代码块开始，有两个计时器被初始化：一个10ms的setTimeout和一个10ms的setInterval.观察计时器初始化位置，（计时器初始化完毕后就会开始计时），发现setTimeout计时器的回调实际上会在第一个代码块执行完毕前被触发。但是这里注意的是，它不会立即执行（单线程不能这样做）。实际上，触发的回调将被排成一个队列，等待下一个可执行时间。
 
@@ -128,18 +166,18 @@ js引擎实现原理：
 
 　　我们发现，setInterval的第一个被触发的回调执行时，setInterval的回调又被触发且排到队列。这向我们传达一个重要的消息：setInterval不关心目前JS正在执行的内容，setInterval的被触发的回调都将会无差别地排队。
 
-　　最后，当setInterval的回调执行两次后，我们发现没有javascript引擎要执行东西。这意味着浏览器将等待着一个新的异步事件发生。我们知道，在50ms时候，setInterval的回调再次被触发，但这次并没有东西阻塞，所以回调就立马执行了。 
+　　最后，当setInterval的回调执行两次后，我们发现没有javascript引擎要执行东西。这意味着浏览器将等待着一个新的异步事件发生。我们知道，在50ms时候，setInterval的回调再次被触发，但这次并没有东西阻塞，所以回调就立马执行了。
 
 　　在浏览器中，JavaScript引擎是基于事件驱动的，这里的事件可看作是浏览器派给它的各种任务，这些任务可能源自当前执行的代码块，如调用setTimeout()，也可能来自浏览器内核，如onload()、onclick()、onmouseover()、setTimeOut()、setInterval()、Ajax等。如果从代码的角度来看，所谓的任务实体就是各种回调函数，由于“单线程”的原因，这些任务会进行排队，一个接着一个等待着被引擎处理。(这段说法来源于http://www.benben.cc/blog/?p=327)
 
 3.       JavaScript引擎线程和其它侦听线程
- 
+
 
 上图中，定时器和事件都按时触发了，这表明JavaScript引擎的线程和计时器触发线程、事件触发线程是三个单独的线程，即使JavaScript引擎的线程被阻塞，其它两个触发线程都在运行。
 
 　　浏览器内核实现允许多个线程异步执行，这些线程在内核制控下相互配合以保持同步。假如某一浏览器内核的实现至少有三个常驻线程： JavaScript引擎线程,事件触发线程，Http请求线程，
 下面通过一个图来阐明单线程的JavaScript引擎与另外那些线程是怎样互动通信的。
-虽然每个浏览器内核实现细节不同,但这其中的调用原理都是大同小异。 
+虽然每个浏览器内核实现细节不同,但这其中的调用原理都是大同小异。
 
      线程间通信：JavaScript引擎执行当前的代码块,其它诸如setTimeout给JS引擎添加一个任务,也可来自浏览器内核的其它线程,如界面元素鼠标点击事件,定时触发器时间到达通知,异步请求状态变更通知等.从代码角度看来任务实体就是各种回调函数,JavaScript引擎一直等待着任务队列中任务的到来.由于单线程关系,这些任务得进行排队,一个接着一个被引擎处理.
 
@@ -167,7 +205,7 @@ setTimeout(function(){
 
 },10);
 
- 
+
 
 setInterval(function(){
 
@@ -196,7 +234,7 @@ l setInterval的回调可能被不停的执行，中间没间隔（如果回调�
 
 ② 多个定时器的代码执行之间的间隔可能会比预期小。此时可采取 setTimeout和setsetInterval的区别 的例子方法。
 
- 
+
 
 5.       Ajax异步
 　　很多同学朋友搞不清楚，既然说JavaScript是单线程运行的，那么XMLHttpRequest在连接后是否真的异步？其实请求确实是异步的，不过这请求是由浏览器新开一个线程请求(参见上图)，当请求的状态变更时，如果先前已设置回调，这异步线程就产生状态变更事件放到JavaScript引擎的处理队列中等待处理，当任务被处理时，JavaScript引擎始终是单线程运行回调函数，具体点即还是单线程运行onreadystatechange所设置的函数。
@@ -204,13 +242,13 @@ l setInterval的回调可能被不停的执行，中间没间隔（如果回调�
 　　Tip:理解JavaScript引擎运作非常重要，特别是在大量异步事件（连续）发生时，可以提升程序代码的效率。
 
 
-GUI渲染线程负责渲染浏览器界面，当界面需要重绘（Repaint）或由于某种操作引发回流(reflow)时,该线程就会执行。但需要注意 GUI渲染线程与JS引擎是互斥的，当JS引擎执行时GUI线程会被挂起，GUI更新会被保存在一个队列中等到JS引擎空闲时立即被执行。3.       
+GUI渲染线程负责渲染浏览器界面，当界面需要重绘（Repaint）或由于某种操作引发回流(reflow)时,该线程就会执行。但需要注意 GUI渲染线程与JS引擎是互斥的，当JS引擎执行时GUI线程会被挂起，GUI更新会被保存在一个队列中等到JS引擎空闲时立即被执行。3.
 事件触发线程，当一个事件被触发时该线程会把事件添加到待处理队列的队尾，等待JS引擎的处理。这些事件可来自JavaScript引擎当前执行的代码块如setTimeOut、也可来自浏览器内核的其他线程如鼠标点击、AJAX异步请求等，但由于JS的单线程关系所有这些事件都得排队等待JS引擎处理。（当线程中没有执行任何同步代码的前提下才会执行异步代码）
 
 JavaScript引擎关注着消息队列（不止一个）。它不停地从消息队列中取出消息，并执行这个消息对应的函数（学名“回调函数”）。直到当前函数执行完毕后（以函数栈清空为标准），才继续从队列中取出消息。这样的机制叫做“事件循环（Event Loop）”。那么啥时候会给消息队列添加消息呢？最常见的例子是浏览器触发一个事件（比如click事件）时，若该事件有被绑定一个事件处理函数，则向消息队列添加消息（未有事件处理函数则丢弃该消息）。其实，你编写的全部JS代码，可以视为一个“被首先加入消息队列而被首先执行”的消息（这就是题主我所谓的“同步代码”）。
 
-更复杂的是，消息是有分类别的，按照性质，划分为两大类：macrotask和microtaskmacrotasks: script(你的全部JS代码，“同步代码”）, setTimeout, setInterval, setImmediate, I/O, UI renderingmicrotasks: process.nextTick,Promises, Object.observe, MutationObserver也就是说，js引擎把所有的任务分到两个队列中，一个是macrotask queue（也叫task queue）,另外一个是microtask queue.js引擎首先从macrotask queue中取出第一个任务，执行完毕后，将microtask 
-queue中的所有任务取出，按顺序全部执行；然后再从macrotask queue中取下一个，执行完毕后，再次将microtask 
+更复杂的是，消息是有分类别的，按照性质，划分为两大类：macrotask和microtaskmacrotasks: script(你的全部JS代码，“同步代码”）, setTimeout, setInterval, setImmediate, I/O, UI renderingmicrotasks: process.nextTick,Promises, Object.observe, MutationObserver也就是说，js引擎把所有的任务分到两个队列中，一个是macrotask queue（也叫task queue）,另外一个是microtask queue.js引擎首先从macrotask queue中取出第一个任务，执行完毕后，将microtask
+queue中的所有任务取出，按顺序全部执行；然后再从macrotask queue中取下一个，执行完毕后，再次将microtask
 queue中的全部取出；循环往复，直到两个queue中的任务都取完。
 
 

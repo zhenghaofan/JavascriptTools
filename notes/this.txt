@@ -11,25 +11,21 @@ setTimeout、setInterval和匿名函数执行时的当前对象是全局对象wi
 DOM事件处理中为undefined
 
 this的使用可以分成以下几个场合。
+
+
 全局环境
-
-在全局环境使用this，它指的就是顶层对象window。
-
-this === window // true 
-
+浏览器端在全局环境使用this，它指的就是顶层对象window。
+this === window // true
 function f() {
     console.log(this === window); // true
 }
-上面代码说明，不管是不是在函数内部，只要是在全局环境下运行，this就是指全局对象window。、
+
 
 构造函数
-
 构造函数中的this，指的是实例对象。
-
 var O = function(p) {
     this.p = p;
 };
-
 O.prototype.m = function() {
     return this.p;
 };
@@ -63,8 +59,8 @@ o2.f = function (){ o1.f() };
 o2.f() // 1
 上面代码表示，由于f方法这时是在o1下面运行，所以this就指向o1。
 
-有时，某个方法位于多层对象的内部，这时如果为了简化书写，把该方法赋值给一个变量，往往会得到意想不到的结果。
-
+重要例子：
+一、
 var a = {
         b : {
             m : function() {
@@ -74,32 +70,47 @@ var a = {
         }
 };
 
-var hello = a.b.m;
+var hello = a.b.m;//是个函数
 hello() // undefined
 上面代码表示，m属于多层对象内部的一个方法。为求简写，将其赋值给hello变量，结果调用时，this指向了全局对象。为了避免这个问题，可以只将m所在的对象赋值给hello，这样调用时，this的指向就不会变。
 
-var hello = a.b;
+var hello = a.b; //是个对象
 hello.m() // Hello
-（4）Node.js
 
-在Node.js中，this的指向又分成两种情况。全局环境中，this指向全局对象global；模块环境中，this指向module.exports。
+二、
+var obj = {
+  name: 'object',
+  getName: function () {
+    return function () {
+      return this.name;
+    }
+  }
+}
+obj.getName()(); //undefined
 
-// 全局环境
-this === global // true
+在getName中添加 var that = this; return function() { return that.name } //object
 
-// 模块环境
-this === module.exports // true
+三、
+var obj = {
+  name: 'object',
+  getName: function () {
+    return this.name;
+  }
+}
+obj.getName() //object
+(obj.getName)() //object
+(obj.getName = obj.getName)() //undefined
 
-
-
-var a = {  
-  name: 'suqing',  
-  getContext: function(){  
-    return this;    
-  }  
-}  
+四、
+var a = {
+  name: 'suqing',
+  getContext: function(){
+    return this;
+  }
+}
 a.getContext() //a对象，是对象内的引用
 
+五、
 var someone = {
     name: "Bob",
     showName: function(){
@@ -114,7 +125,7 @@ var other = {
 
 other.showName();　　//Tom
 
-
+六、
 var name = "Tom";
 
 var Bob = {
@@ -127,6 +138,16 @@ var Bob = {
 var show = Bob.show;
 show();　//Tom
 
+
+(4）Node.js
+
+在Node.js中，this的指向又分成两种情况。全局环境中，this指向全局对象global；模块环境中，this指向module.exports。
+
+// 全局环境
+this === global // true
+
+// 模块环境
+this === module.exports // true
 
 DOM event handler：
 <span id=​"s_rp_words" class=​"s-rp-words">​…​</span>​

@@ -5,7 +5,7 @@ Object.keys方法和Object.getOwnPropertyNames方法很相似，一般用来遍�
 var o = {
     p1: 123,
     p2: 456
-}; 
+};
 
 Object.keys(o)// ["p1", "p2"]
 Object.getOwnPropertyNames(o)// ["p1", "p2"]
@@ -14,21 +14,20 @@ Object.getOwnPropertyNames方法返回直接定义在某个对象上面的全部
 
 Object中的方法：
 1）对象属性模型的相关方法
-
 Object.getOwnPropertyDescriptor()：获取某个属性的attributes对象。
 Object.defineProperty()：通过attributes对象，定义某个属性。
 Object.defineProperties()：通过attributes对象，定义多个属性。
 Object.getOwnPropertyNames()：返回直接定义在某个对象上面的全部属性的名称。
-（2）控制对象状态的方法
 
+（2）控制对象状态的方法
 Object.preventExtensions()：防止对象扩展。
 Object.isExtensible()：判断对象是否可扩展。
 Object.seal()：禁止对象配置。
 Object.isSealed()：判断一个对象是否可配置。
 Object.freeze()：冻结一个对象。
 Object.isFrozen()：判断一个对象是否被冻结。
-（3）原型链相关方法
 
+（3）原型链相关方法
 Object.create()：生成一个新对象，并该对象的原型。
 Object.getPrototypeOf()：获取对象的Prototype对象。
 
@@ -59,19 +58,19 @@ o.p
 
 如果一个属性的enumerable为false，下面三个操作不会取到该属性。
 
+var a = {}, b={}; //a和b引用不同的空对象
+var a=b={}; // a和b引用同一个空对象
+
 for..in循环
 Object.keys方法
 JSON.stringify方法
 
 三类对象：内置对象（ECMAScript定义的数组、函数）、宿主对象（JavaScript解释器所嵌入的宿主环境定义的，客户端表示网页结构的html element对象均是宿主对象）、自定义对象
 
-
-
 对象的特性：
 对象的原型指向另一个对象，本对象的属性继承自它的原型对象；
 对象的类是一个标识对象类型的字符串；
 对象的扩展标记知名是否可以向该对象添加新属性
-
 每一个对象都有原型对象继承属性，Object.prototype表示对原型对象的引用
 
 创建对象可用new Object(); Object.create()//第一个参数为这个对象的原型
@@ -90,7 +89,7 @@ var len = "";
 if(book){
 	if(book.title){
 		len = book.title.length
-	}	
+	}
 }
 2.
 var len = book && book.title && book.title.length;
@@ -98,7 +97,15 @@ var len = book && book.title && book.title.length;
 检查属性：通过in或hasOwnProperty(),后者检查是否是自有属性。为了判断一个对象是否包含自定义属性而不是原型链上的属性， 我们需要使用继承自 Object.prototype 的 hasOwnProperty 方法。
 
 注意: 通过判断一个属性是否 undefined 是不够的。 因为一个属性可能确实存在，只不过它的值被设置为 undefined。
+
 hasOwnProperty 是 JavaScript 中唯一一个处理属性但是不查找原型链的函数。
+在for in 循环中：
+for (key in obj) {
+  if(obj.hasOwnProperty(key)) {
+    dosomething
+  }
+}
+
 JavaScript 不会保护 hasOwnProperty 被非法占用，因此如果一个对象碰巧存在这个属性， 就需要使用外部的 hasOwnProperty 函数来获取正确的结果。
 
 var foo = {
@@ -162,6 +169,26 @@ Fubar(1, 2)._foo // 1
 
 
 JavaScript类：基于原型继承实现
+
+实现 public, private, static:
+function People() {
+this.name = 'aa'; //public, 所有函数都可以访问，修改，并删除这些属性
+var age = 20; //private
+this.getName = function () {
+return this.name
+}
+this.getAge = function () {
+return age;
+}
+}
+var p1 = new People(); //this会指向p1，getName方法运行时可以通过this去访问p1的属性
+var p2 = new People();
+重复多次对象实例化，每实例化一次，这个类就会执行构造器里面的代码，因此每当这个类被实例化时，这些方法和属性会被拷贝到实例化出来的对象中，就会造成内存的浪费；因此就诞生了propotype；
+prototype的作用通常是给一个类添加一系列常量或者方法。 每当一个类被实例化之后，实例化出来的对象会自动获取类的prototype中定义的方法和属性。只不过这里的获取类似于C++里面的引用，不会在内存里对这些方法和属性进行复制，而是指向这些方法和属性。
+
+static:
+People.staticAttr = '';
+
 使用构造函数定义一个类：
 function Range(from, to){
 	this.from = from;
@@ -173,6 +200,7 @@ Range.prototype = {
 		return this.from <= x && x <= this.to;
 	}
 }//使用自身的新对象重写预定义的prototype，所以不包含constructor，可以在原型中显式定义constructor
+
 创建对象：
 var r = new Range(1,3);
 r.includes(2);//true
@@ -205,17 +233,19 @@ AA.prototype.getBB = function(){
            }
           CC.prototype = new AA();
           var cc = new CC();
-          cc.getBB();  
+          cc.getBB();
+
 借用构造函数继承：
         var AA = function(gg){
 				this.bb = true;
                 this.gg = gg;
            }
         var CC = function(){
-                AA.call(this,"abc");   
+                AA.call(this,"abc");
            }
 	var cc = new CC();
         cc.gg//"abc"
+
 组合继承：两种复合
 
 若在函数中新建对象，当函数返回时，该对象会被销毁
@@ -225,11 +255,10 @@ function Foo() {}
 Foo.prototype = 1; // 无效
 
 var b = {
-length:2,
-push:[].push,
-1:'a',
-2:'b'
+  length:2,
+  push:[].push,
+  1:'a',
+  2:'b'
 };
-b.push('c');
+b.push('c'); //调用push方法后，相当于b = Array.prototype.slice.call(b).push('c'),b[2]是undefined
 b.length() //3,b[0]是undefined，b[1]是a,b[2]是c
-
