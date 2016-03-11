@@ -1,0 +1,65 @@
+编写一个flux:
+1.view层分发操作 dispatch actions
+  dispatch本身是一个事件系统，负责广播事件和注册回调，有且仅有一个全局的dispatcher
+  如：
+  var appDispatcher = new Dispatcher()
+
+  点击新建按钮，把条目添加到一个列表中：
+  <button onClick={ this.createNewItem } >new item</button>
+
+  点击后View层触发：
+  createNewItem: function(evt) {
+    appDispatcher.dispatch({
+      eventName: 'new-item',
+      newItem: {name: 'Marco'}
+    })
+  }
+
+  如果定义ActionCreator则是：//View层调用Actions.add()
+  ListActions = {
+    add: function (item) {
+      appDispatcher.dispatch({
+        eventName: 'new-item',
+        newItem: item
+      })
+    }
+  }
+
+2.Store响应事件
+  Store 是一个单例，不需要new出来
+  var ListStore = {
+    items: [],
+    getAll: function() {
+      return this.items
+    }
+  }
+  然后由Store响应分发的事件，只有Store可以注册callback，View层不能调appDispatcher方法，dispatcher的存在就是为了把消息从View传到Store
+
+  appDispatcher.register(
+    function(payload) {
+      switch( payload.eventName ) {
+        case 'new-item':
+          ListStore.items.push( payload.newItem );
+          break;
+      }
+
+      return true;
+    }
+  )
+
+3.Store触发change事件
+  让Store可以触发事件，可以使用MicorEvent库
+  MicroEvent.mixin (ListStore) //ListStore拥有bind,unbind,trigger方法
+
+  Component绘制时：
+  componentDidMount: function() {
+    ListStore.bind('change', this.listChange);
+  }
+  listChange: function() {
+    this.forceUpdate();
+  }
+
+  取消时：
+  componentWillUnmount: function() {
+    ListStore.unbind('change', this.listChange)
+  }
