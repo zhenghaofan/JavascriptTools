@@ -11,14 +11,27 @@ function unique(arr){
 
 //2.sort()，性能较好
 function unique (arr) {
-    arr.sort();
-    var result=[arr[0]];
-    for(var i = 1; i < arr.length; i++){
-        if( arr[i] !== arr[i-1]) {
-            result.push(arr[i]);
-        }
-    }
-    return result;
+  arr.sort();
+  var result=[arr[0]];
+  for(var i = 1; i < arr.length; i++){
+      if( arr[i] !== arr[i-1]) {
+          result.push(arr[i]);
+      }
+  }
+  return result;
+}
+
+function unique (arr) {
+	var n = {},r=[]; //n为hash表，r为临时数组
+	for(var i = 0; i < arr.length; i++) //遍历当前数组
+	{
+			if (!n[i]) //如果hash表中没有当前项
+			{
+					n[i] = true; //存入hash表
+					r.push(n[i]); //把当前数组的当前项push到临时数组里面
+			}
+	}
+	return r;
 }
 
 Array.prototype.unique1 = function()
