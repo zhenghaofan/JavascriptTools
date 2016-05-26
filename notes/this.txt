@@ -72,7 +72,15 @@ var a = {
 
 var hello = a.b.m;//是个函数
 hello() // undefined
-上面代码表示，m属于多层对象内部的一个方法。为求简写，将其赋值给hello变量，结果调用时，this指向了全局对象。为了避免这个问题，可以只将m所在的对象赋值给hello，这样调用时，this的指向就不会变。
+上面代码表示，m属于多层对象内部的一个方法。为求简写，将其赋值给hello变量
+如：
+var a = 2;
+function aa(){
+  a = 3;
+  console.log(this.a);
+}
+aa();//3
+结果调用时，this指向了全局对象。为了避免这个问题，可以只将m所在的对象赋值给hello，这样调用时，this的指向就不会变。
 
 var hello = a.b; //是个对象
 hello.m() // Hello
@@ -98,8 +106,21 @@ var obj = {
   }
 }
 obj.getName() //object
-(obj.getName)() //object
-(obj.getName = obj.getName)() //undefined
+(obj.getName)() //object, 对象调用
+(obj.getName = obj.getName)() //undefined, 返回函数本身，即function(){return this.name}
+
+var getThis = function(){
+  return this;
+};
+var object = {};
+object.getThis = getThis;
+
+getThis() //window
+object.getThis() //object
+(null,object.getThis)() //window,逗号,最后返回右操作数的值
+(getThis2=object.getThis)() //window
+(getThis2)() //window
+getThis2() //window
 
 四、
 var a = {
