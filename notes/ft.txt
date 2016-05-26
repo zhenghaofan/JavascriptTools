@@ -1,0 +1,260 @@
+C 语言中的函数指针,很容易实现一个高阶函数。我们还以 map 为例,说明在 C 语言中如何实现:
+//prototype of function
+void map(int* array, int length, int (*func)(int));
+
+map 函数的第三个参数为一个函数指针,接受一个整型的参数,返回一个整型参数,我们来看看其实现:
+//implement of function map
+void map(int* array, int length, int (*func)(int))
+{
+  int i = 0;
+  for(i = 0; i < length; i++)
+    {
+      array[i] = func(array[i]);
+    }
+}
+
+我们在这里实现两个小函数,分别计算传入参数的乘 2 的值,和乘 3 的值,然后进行测试:
+int twice(int num)
+{ return num * 2; }
+
+int triple(int num)
+{ return num * 3; }
+//function main
+int main(int argc, char** argv)
+{ int array[5] = {1, 2, 3, 4, 5};
+  int i = 0;
+  int len = 5;
+
+//print the orignal array
+  printArray(array, len);
+  map(array, len, twice);
+  printArray(array, len);
+￼
+//mapped by twice, then triple
+  map(array, len, triple);
+  printArray(array, len);
+  return 0;
+  }
+运行结果如下:
+12345
+2 4 6 8 10
+6 12 18 24 30
+
+应该注意的是 map 的使用方法,如 map(array, len, twice)中,最后的参数为 twice,而 twice 为一个函数。
+因为 C 语言中,函数的定义不能嵌套,因此不能采用诸如 JavaScript 中的匿名函数那样的简洁写法。
+
+虽然在 C 语言中可以通过函数指针的方式来实现高阶函数,但是随着高阶函数的“阶” 的增高,指针层次势必要跟着变得很复杂,那样会增加代码的复杂度,而且由于 C 语言是 强类型的,因此在数据类型方面必然有很大的限制。
+
+9.2.3 Java 中的高阶函数
+Java 中的匿名类,事实上可以理解成一个教笨重的闭包(可执行单元),我们可以通过 Java
+的匿名类来实现上述的 map 操作,首先,我们需要一个对函数的抽象:
+interface Function{
+int execute(int x);
+}
+
+我们假设 Function 接口中有一个方法 execute,接受一个整型参数,返回一个整型参数, 然后我们在类 List 中,实现 map 操作:
+private int[] array;
+public List(int[] array){
+  this.array = array;
+}
+
+public void map(Function func){
+for(int i = 0, len = this.array.length; i < len; i++){
+  this.array[i] = func.execute(this.array[i]); }
+}
+￼map 接受一个实现了 Function 接口的类的实例,并调用这个对象上的 execute 方法来处 理数组中的每一个元素。我们这里直接修改了私有成员 array,而并没有创建一个新的数组。 好了,我们来做个测试:
+public static void main(String[] args){
+List list = new List(new int[]{1, 2, 3, 4, 5}); list.print();
+list.map(
+       list.print();
+       list.map(
+       list.print();
+    }
+同前边的两个例子一样,这个程序会打印:
+12345
+2 4 6 8 10
+6 12 18 24 30
+
+灰色背景色的部分即为创建一个匿名类,从而实现高阶函数。很明显,我们需要传递给 map 的是一个可以执行 execute 方法的代码。而由于 Java 是命令式的编程语言,函数并非第一位的,函数必须依赖于对象,附属于对象,因此我们不得不创建一个匿名类来包装这个 execute 方法。而在 JavaScript 中,我们只需要传递函数本身即可,这样完全合法,而且 代码更容易被人理解。
+
+9.3 闭包与柯里化
+闭包和柯里化都是 JavaScript 经常用到而且比较高级的技巧,所有的函数式编程语言都支 持这两个概念,因此,我们想要充分发挥出 JavaScript 中的函数式编程特征,就需要深入 的了解这两个概念,我们在第七章中详细的讨论了闭包及其特征,闭包事实上更是柯里化所 不可缺少的基础。
+￼new Function(){
+  ￼public int execute(int x){
+    ￼return x * 2;
+    } });
+￼￼  ￼new Function(){
+￼ public int execute(int x){
+￼ return x * 3;
+} });
+
+￼9.3.1 柯里化的概念 闭包的我们之前已经接触到,先说说柯里化。柯里化就是预先将函数的某些参数传入,得到
+一个简单的函数,但是预先传入的参数被保存在闭包中,因此会有一些奇特的特性。比如:
+var adder = function(num){ return function(y){
+return num + y; }
+}
+var inc = adder(1);
+var dec = adder(-1);
+这里的 inc/dec 两个变量事实上是两个新的函数,可以通过括号来调用,比如下例中的用
+法:
+//inc, dec现在是两个新的函数,作用是将传入的参数值(+/-)1 print(inc(99));//100
+print(dec(101));//100
+print(adder(100)(2));//102 print(adder(2)(100));//102
+
+9.3.2 柯里化的应用
+根据柯里化的特性,我们可以写出更有意思的代码,比如在前端开发中经常会遇到这样 的情况,当请求从服务端返回后,我们需要更新一些特定的页面元素,也就是局部刷新的概 念。使用局部刷新非常简单,但是代码很容易写成一团乱麻。而如果使用柯里化,则可以很 大程度上美化我们的代码,使之更容易维护。我们来看一个例子:
+
+￼￼//update会返回一个函数,这个函数可以设置id属性为item的web元素的内容
+function update(item){
+return function(text){ $("div#"+item).html(text);
+} }
+//Ajax请求,当成功是调用参数callback
+function refresh(url, callback){
+var params = { ￼￼￼￼
+           callback(data);
+       },
+//当请求出现错误时调用 error: function(err){
+alert("error : "+err); }
+}); }
+￼refresh("action.do?target=news", refresh("action.do?target=articles", refresh("action.do?target=pictures",
+("newsPanel")); ("articlePanel")); ("picturePanel"));
+￼   type : "echo",
+data : "" };
+$.ajax({
+   type:"post",
+url:url, cache:false, async:true, dataType:"json", data:params,
+//当异步请求成功时调用
+success: function(data, status){
+update
+￼其中,update 函数即为柯里化的一个实例,它会返回一个函数,即:
+update("newsPanel") = function(text){ $("div#newsPanel").html(text);
+}
+由于 update(“newsPanel”)的返回值为一个函数,需要的参数为一个字符串,因此在 refresh 的 Ajax 调用中,当 success 时,会给 callback 传入服务器端返回的数据信息, 从而实现 newsPanel 面板的刷新,其他的文章面板 articlePanel,图片面板 picturePanel 的刷新均采取这种方式,这样,代码的可读性,可维护性均得到了提高。
+
+9.4.1 函数式编程风格
+通常来讲,函数式编程的谓词(关系运算符,如大于,小于,等于的判断等),以及运算 (如加减乘数等)都会以函数的形式出现,比如:
+a>b
+通常表示为:
+    gt(a, b)//great than
+因此,可以首先对这些常见的操作进行一些包装,以便于我们的代码更具有“函数式”风格:
+function abs(x){ return x>0?x:-x;} function add(a, b){ return a+b; } function sub(a, b){ return a-b; } function mul(a, b){ return a*b; } function div(a, b){ return a/b; } function rem(a, b){ return a%b; } function inc(x){ return x + 1; } function dec(x){ return x - 1; } function equal(a, b){ return a==b; } function great(a, b){ return a>b; } function less(a, b){ return a<b; } function negative(x){ return x<0; } function positive(x){ return x>0; } function sin(x){ return Math.sin(x); } function cos(x){ return Math.cos(x); }
+如果我们之前的编码风格是这样:
+// n*(n-1)*(n-2)*...*3*2*1
+function factorial(n){
+  if(n == 1){
+    return 1;
+    } else {
+    return n * factorial(n - 1);
+    }
+}
+function factorial(n){
+  if(equal(n, 1)){
+    return 1;
+    } else {
+    return mul(n, factorial(dec(n)));
+    }
+}
+
+函数式编程的特点当然不在于编码风格的转变,而是由更深层次的意义。比如,下面是另外 一个版本的阶乘实现:
+/*
+* product <- counter * product * counter <- counter + 1
+* */
+function factorial(n){
+  function fact_iter(product, counter, max){
+    if(great(counter, max)){
+      return product;
+    } else {
+      fact_iter(mul(counter, product), inc(counter), max);
+    }
+  }
+  return fact_iter(1, 1, n);
+}
+
+虽然代码中已经没有诸如+/-/*//之类的操作符,也没有>,<,==,之类的谓词,但是,这个函数仍然算不上具有函数式编程风格,我们可以改进一下:
+
+function factorial(n){
+  return (function factiter(product, counter, max){
+    if(great(counter, max)){
+      return product;
+      } else {
+      return factiter(mul(counter, product), inc(counter), max);
+      }
+    })(1, 1, n);
+  }
+factorial(10);
+
+通过一个立即运行的函数 factiter,将外部的 n 传递进去,并立即参与计算,最终返回运算结果。
+
+9.4.2 Y-结合子 提到递归,函数式语言中还有一个很有意思的主题,即:如果一个函数是匿名函数,能不能进行递归操作呢?如何可以,怎么做?我们还是来看阶乘的例子:
+
+function factorial(x){
+return x == 0 ? 1 : x * factorial(x-1);
+}
+factorial 函数中,如果 x 值为 0,则返回 1,否则递归调用 factorial,参数为 x 减 1,最 后当 x 等于 0 时进行规约,最终得到函数值(事实上,命令式程序语言中的递归的概念最早 即来源于函数式编程中)。现在考虑:将 factorial 定义为一个匿名函数,那么在函数内部, 在代码 x*factorial(x-1)的地方,这个 factorial 用什么来替代呢?
+
+lambda 演算的先驱们,天才的发明了一个神奇的函数,成为 Y-结合子。使用 Y-结合子,可以做到对匿名函数使用递归
+
+我们来看看这个神奇的 Y-结合子:
+￼var Y = function(f) {
+  return (function(g) {
+    return g(g);
+    })(function(h) {
+      return function() {
+        return f(h(h)).apply(null, arguments);
+        };
+    });
+};
+
+我们来看看如何运用 Y-结合子,依旧是阶乘这个例子:
+var factorial = Y(function(func){
+  return function(x){
+    return x == 0 ? 1 : x * func(x-1); }
+});
+factorial(10);
+或者:
+Y(function(func){
+  ￼return function(x){
+  return x == 0 ? 1 : x * func(x-1);
+} })(10);
+
+不要被上边提到的 Y-结合子的表达式吓到,事实上,在 JavaScript 中,我们有一种简单的 方法来实现 Y-结合子:
+var fact = function(x){
+  return x == 0 : 1 : x * arguments.callee(x-1);
+}
+fact(10);
+或者:
+(function(x){
+  return x == 0 ? 1 : x * arguments.callee(x-1);
+})(10);//3628800
+其中,arguments.callee 表示函数自身,而 arguments.caller 表示函数调用者,因此省去了很多复杂的步骤。
+
+9.4.3 其他实例 下面的代码则颇有些“开发智力”之功效:
+//函数的不动点
+function fixedPoint(fx, first){
+  var tolerance = 0.00001;
+  function closeEnough(x, y){
+    return less( abs( sub(x, y) ), tolerance)
+  };
+  function Try(guess) {//try 是javascript中的关键字,因此这个函数名为大写
+    var next = fx(guess); //print(next+" "+guess);
+    if(closeEnough(guess, next)){
+      return next;
+    } else {
+    return Try(next);
+    }
+  };
+  return Try(first);
+}
+
+￼// 数层嵌套函数
+function sqrt(x){
+  return fixedPoint(function(y){
+    return function(a, b){
+      return div(add(a, b),2);
+      }(y, div(x, y));
+    },
+  1.0);
+}
+print(sqrt(100));
+
+fiexedPoint 求函数的不动点,而 sqrt 计算数值的平方根。这些例子来源于《计算机程序 的构造和解释》,其中列举了大量的计算实例,不过该书使用的是 scheme 语言,在本书中, 例子均被翻译为 JavaScript。

@@ -31,14 +31,14 @@ readyState是一个整数，0为open未调用，1为open已调用，2为已经�
 
 通过request.getResponseHeader('')可以获取响应头信息
 
- request.onreadystatechange=function() {  
-            if (request.readyState==4 request.status == 200) {  
-                result.innerHTML = request.responseText;  
-            }  
-            else{  
-                result.innerHTML = "正在查询，请稍等";  
-            }                 
-        }  
+ request.onreadystatechange=function() {
+            if (request.readyState==4 request.status == 200) {
+                result.innerHTML = request.responseText;
+            }
+            else{
+                result.innerHTML = "正在查询，请稍等";
+            }
+        }
 
 XHR2：
 新版本的XMLHttpRequest对象，针对老版本的缺点，做出了大幅改进。
@@ -84,14 +84,14 @@ $(document).ready(function(){
 			alert(data.aaa);
 		}
 	})
-}		
+}
 );
 
 解决跨域问题：
 1.JSONP
 2.XHR2
 3.服务器代理
-4.跨域脚本API访问
+4.跨域脚本API访问, window.postMessage
 
 Javascript的APIs中，如 iframe.contentWindow, window.parent, window.open 和 window.opener 允许文档间直接相互引用。当两个文档的源不同时，这些引用方式将对 Window 和 Location对象的访问添加限制。
 
