@@ -77,6 +77,12 @@ def tailarr(x, run_total):
 调用栈变化：tailarr(5, 0) -> tailarr(4, 5) -> tailarr(3, 9)
 
 javascript版本：
+function tailFactorial(n, total) {
+  if(n === 1) return total;
+  return tailFactorial(n-1, total+n)
+}
+
+
 function factorial(n) {
   if (n === 1) return 1;
   return n * factorial(n - 1);
