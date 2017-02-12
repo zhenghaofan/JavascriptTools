@@ -12,11 +12,11 @@ onload属性在所有文档内容加载完之后触发
 
 script标签间：如果代码中包含"<"或"&"，会被解释为XML标记，所以如果要使用XHTML， 最好把所有的JavaScript代码放在CDATA中：
 <script><![CDATA[
-JavaScript代码	
+JavaScript代码
 ]]</script>
 
 URL中的JavaScript：
-javascript：后面跟随的是会被JavaScript解释器运行的代码，语句之间必须用分号隔开；当执行完JavaScript时，浏览器会根据返回值选择是否替换当前显示的文档，如果返回undefined则不会替换，要确保javascript:URL不会替换当前文档，可以加上javascript:void ... 
+javascript：后面跟随的是会被JavaScript解释器运行的代码，语句之间必须用分号隔开；当执行完JavaScript时，浏览器会根据返回值选择是否替换当前显示的文档，如果返回undefined则不会替换，要确保javascript:URL不会替换当前文档，可以加上javascript:void ...
 
 JavaScript的执行有两个阶段：
 1.载入文档内容，并执行script标签中的代码
@@ -38,16 +38,3 @@ JavaScript的执行有两个阶段：
 8.开始调用异步事件，并异步响应用户输入
 
 JQuery中事件处理程序时通过bind()完成的，不需要考虑到底使用addEventListener()还是attachEvent()
-
-JavaScript同源策略：
-JavaScript脚本不能读取从不同服务器载入的文档内容，不能再来自不同服务器的文档上注册事件监听器；只能读取和所属文档来源相同的窗口和文档属性。
-不同来源：
-http:和https:,端口不同，ip不同，服务器不同
-
-XSS攻击：
-跨站脚本攻击，即攻击者向目标站点注入HTML标签或脚本
-预防方式：在使用任何不可信的数据创建文档内容之前，从中移除HTML标签(主要是script标签)，比如：
-aaa = aaa. replace(/</g, "&lt;").replace(/>/g,"&gt;");
-HTML5中为iframe标签定义了一个sandbox属性，它允许显示不可信的内容，并自动禁用脚本
-
-拒绝服务攻击：例如无限弹窗或死循环计算占用CPU
