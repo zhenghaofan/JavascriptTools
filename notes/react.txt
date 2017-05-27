@@ -1,0 +1,463 @@
+定义组件：
+①const aaa = React.createClass({});
+定义initialState:
+getInitialState: function(){
+     return {
+     }
+},
+propTypes: {
+
+},
+getDefaultProps: function(){
+     return {
+
+     }
+}
+
+在这种情况下调用方法时不需要使用bind()
+
+②
+class AAA extends React.Component {
+     render() {
+         ...
+     }
+}
+定义initialState:
+constructor(props, context) {
+     super(props, context)
+     this.state = {
+     };
+}
+
+AAA.propTypes = {
+
+};
+AAA.defaultProps = {
+
+}
+这种情况下需要使用bind，但如果使用ES6的箭头函数，则可以不使用
+
+
+引入react.js, react-dom.js,通过（src 或 npm 包）:
+ReactDom.render( content , element )，必须只在组件定义完之后调用
+content可以是<h1>...</h1>,也可以是React.createElement(‘h1’,null,’…')
+
+解析JSX语法需要引入browser.min.js
+
+创建一个组件: React.createClass()，通过render方法渲染组件内容，组件名一般首字母大写
+
+使用this.props代表当前类（标签）的属性，可以通过this.props.aaa访问父级组件的属性，this.props.children表示父级组件的内容
+
+例子：
+var data = [
+  {id: 1, author: "Pete Hunt", text: "This is one comment"},
+  {id: 2, author: "Jordan Walke", text: "This is *another* comment"}
+];
+
+We need to get this data into CommentList in a modular way. Modify CommentBox and the ReactDOM.render() call to pass this data into the CommentList via props:
+
+// tutorial9.js
+var CommentBox = React.createClass({
+  render: function() {
+    return (
+      <div className="commentBox">
+        <h1>Comments</h1>
+        <CommentList data={this.props.data} />
+        <CommentForm />
+      </div>
+    );
+  }
+});
+
+ReactDOM.render(
+  <CommentBox data={data} />,
+  document.getElementById('content')
+);
+
+Now that the data is available in the CommentList, let's render the comments dynamically:
+
+// tutorial10.js
+var CommentList = React.createClass({
+  render: function() {
+    var commentNodes = this.props.data.map(function(comment) {
+      return (
+        <Comment author={comment.author} key={comment.id}>
+          {comment.text}
+        </Comment>
+      );
+    });
+    return (
+      <div className="commentList">
+        {commentNodes}
+      </div>
+    );
+  }
+});
+
+使用getDefaultProps定义默认属性值
+
+state指向一个对象，就是getInitialState的对象；
+props 是不可变的: they are passed from the parent and are "owned" by the parent.
+To implement interactions, we introduce mutable state to the component.
+
+this.state is private to the component and can be changed by calling this.setState().
+When the state updates, the component re-renders itself.
+组件的state改变时会重新渲染，this.props 表示那些一旦定义，就不再改变的特性，而 this.state 是会随着用户互动而产生变化的特性。
+
+Let's replace the hard-coded data with some dynamic data from the server. We will remove the data prop and replace it with a URL to fetch:
+
+// tutorial11.js
+ReactDOM.render(
+  <CommentBox url="/api/comments" />,
+  document.getElementById('content')
+);
+This component is different from the prior components because it will have to re-render itself. The component won't have any data until the request from the server comes back, at which point the component may need to render some new comments.
+
+render() methods are written declaratively as functions of this.props and this.state. The framework guarantees the UI is always consistent with the inputs.
+
+When the server fetches data, we will be changing the comment data we have. Let's add an array of comment data to the CommentBox component as its state:
+
+// tutorial12.js
+var CommentBox = React.createClass({
+  getInitialState: function() {
+    return {data: []};
+  },
+  render: function() {
+    return (
+      <div className="commentBox">
+        <h1>Comments</h1>
+        <CommentList data={this.state.data} />
+        <CommentForm />
+      </div>
+    );
+  }
+});
+getInitialState() executes exactly once during the lifecycle of the component and sets up the initial state of the component.
+
+Updating state
+When the component is first created, we want to GET some JSON from the server and update the state to reflect the latest data. We're going to use jQuery to make an asynchronous request to the server we started earlier to fetch the data we need.
+The data is already included in the server you started (based on the comments.json file), so once it's fetched, this.state.data will look something like this:
+
+[
+  {"author": "Pete Hunt", "text": "This is one comment"},
+  {"author": "Jordan Walke", "text": "This is *another* comment"}
+]
+// tutorial13.js
+var CommentBox = React.createClass({
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  render: function() {
+    return (
+      <div className="commentBox">
+        <h1>Comments</h1>
+        <CommentList data={this.state.data} />
+        <CommentForm />
+      </div>
+    );
+  }
+});
+Here, componentDidMount is a method called automatically by React after a component is rendered for the first time.
+The key to dynamic updates is the call to this.setState().
+We replace the old array of comments with the new one from the server and the UI automatically updates itself. Because of this reactivity, it is only a minor change to add live updates.
+We will use simple polling here but you could easily use WebSockets or other technologies.
+
+// tutorial14.js
+var CommentBox = React.createClass({
+  loadCommentsFromServer: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount: function() {
+    this.loadCommentsFromServer();
+    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+  },
+  render: function() {
+    return (
+      <div className="commentBox">
+        <h1>Comments</h1>
+        <CommentList data={this.state.data} />
+        <CommentForm />
+      </div>
+    );
+  }
+});
+
+ReactDOM.render(
+  <CommentBox url="/api/comments" pollInterval={2000} />,
+  document.getElementById('content')
+);
+All we have done here is move the AJAX call to a separate method and call it when the component is first loaded and every 2 seconds after that.
+
+用户在表单填入的内容，属于用户跟组件的互动，所以不能用 this.props 读取；通过setState()设置对应属性
+
+例子：
+var CommentForm = React.createClass({
+  getInitialState: function() {
+    return {author: '', text: ''};
+  },
+  handleAuthorChange: function(e) {
+    this.setState({author: e.target.value});
+  },
+  handleTextChange: function(e) {
+    this.setState({text: e.target.value});
+  },
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var author = this.state.author.trim();
+    var text = this.state.text.trim();
+    if (!text || !author) {
+      return;
+    }
+    // TODO: send request to the server
+    this.props.onCommentSubmit({author: author, text: text}); //触发CommentBox的CommentSubmit事件
+    this.setState({author: '', text: ''});
+  },
+  render: function() {
+    return (
+      <form className="commentForm" onSubmit={this.handleSubmit}>
+        <input
+          type="text"
+          placeholder="Your name"
+          value={this.state.author}
+          onChange={this.handleAuthorChange}
+        />
+        <input
+          type="text"
+          placeholder="Say something..."
+          value={this.state.text}
+          onChange={this.handleTextChange}
+        />
+        <input type="submit" value="Post" />
+      </form>
+    );
+  }
+});
+
+We attach an onSubmit handler to the form that clears the form fields when the form is submitted with valid input.
+
+Call preventDefault() on the event to prevent the browser's default action of submitting the form.
+
+CommentBox:
+var CommentBox = React.createClass({
+  loadCommentsFromServer: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  handleCommentSubmit: function(comment) {
+    var comments = this.state.data;
+    // Optimistically set an id on the new comment. It will be replaced by an
+    // id generated by the server. In a production application you would likely
+    // not use Date.now() for this and would have a more robust system in place.
+    comment.id = Date.now();
+    var newComments = comments.concat([comment]);
+    this.setState({data: newComments});
+
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: comment,
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        this.setState({data: comments});
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+
+  },
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount: function() {
+    this.loadCommentsFromServer();
+    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+  },
+  render: function() {
+    return (
+      <div className="commentBox">
+        <h1>Comments</h1>
+        <CommentList data={this.state.data} />
+        <CommentForm onCommentSubmit={this.handleCommentSubmit} />
+      </div>
+    );
+  }
+});
+
+组件的生命周期分成三个状态：
+    Mounting：已插入真实 DOM（mount:装上的意思）
+    Updating：正在被重新渲染
+    Unmounting：已移出真实 DOM
+
+React 为每个状态都提供了两种处理函数，will 函数在进入状态之前调用，did 函数在进入状态之后调用，三种状态共计五种处理函数。
+    componentWillMount()
+    componentDidMount()
+    componentWillUpdate(object nextProps, object nextState)
+    componentDidUpdate(object prevProps, object prevState)
+    componentWillUnmount()
+
+此外，React 还提供两种特殊状态的处理函数。
+    componentWillReceiveProps(object nextProps)：已加载组件收到新的参数时调用
+    shouldComponentUpdate(object nextProps, object nextState)：组件判断是否重新渲染时调用
+
+生命周期：
+组件类创建时调用一次getDefaultProps(),返回值被缓存下来。该方法在任何实例创建之前调用，不能依赖于this.props，它返回的任何对象将会在实例间共享，而不是每个实例都有一份拷贝
+组件mounted之前：调用一次getInitialState()
+组件初始化render之前：调用一次componentWillMount()（客户端和服务器端）,如果componentWillMount调用了setState,则render()会感知到更新后的state,将会只执行一次
+组件初始化render之后：调用一次componentDidMount()（只在客户端），在这个时候组件拥有一个DOM，可以通过this.getDOMNode()获取相应的DOM节点
+
+组件接受新的props的时候：调用componentWillReceiveProps(nextProps), 在初始化时不会调用该方法。
+在这个方法中调用this.setState()不会引发第二次渲染，调用setState()时，当props改变的时候componentWillReceiveProps会在render()之前调用
+
+如：
+componentWillReceiveProps: function(nextProps) {
+  this.setState({
+    likesIncreasing: nextProps.likeCount > this.props.likeCount
+  });
+}
+
+相反并没有componentWillReveiveState方法，是因为prop改变会触发state改变，反过来不行。如果需要根据state改变，使用componentWillUpdate
+
+组件接受新的prop或state后，将要渲染之前：调用shouldComponentUpdate(nextProps,nextState),该方法默认返回true,如果组件不想在接受新的props或state后更新，该方法应返回false
+该方法在初始化渲染时不会调用，在使用forceUpdate的时候也不会调用
+
+如：
+shouldComponentUpdate: function(nextProps, nextState) {
+  return nextProps.id !== this.props.id;
+}
+
+这个方法返回false, 则render()不会执行，直到下一次state改变；componentWillUpdate,componentDidUpdate也不会调用；用这个方法主要用于提升应用性能
+
+组件接受新的prop或state后，将要渲染之前：调用componentWillUpdate(nextProps, nextState),在这个方法中不能使用this.setState(),如果需要必须在componentWillReceiveProps中使用；该方法在初始化渲染时不会调用
+
+组件更新已经同步到DOM之后：立即调用componentDidUpdate(prevProps, prevState) ；该方法在初始化渲染时不会调用
+
+组件从DOM中移除之后：调用componentWillUnmount(), 执行必要的清理，如清楚定时器等
+
+mixins 数组，允许使用混合，在多个组件之间共享行为
+statics 定义静态方法，可以在组件类上使用，意味着可以在任何组件实例创建之前调用它们，不能获取组件的props,state
+
+
+浏览器在渲染网页时，会先将HTML文档解析并构建DOM树，然后与CSSOM树生成RenderObject树，最后渲染成页面。浏览器中渲染引擎和JavaScript引擎是分离的，渲染引擎会提供一些接口给JavaScript调用，它们二者通信的性能其实是很差的。
+之前，为了优化性能大家通常采用的办法是减少DOM操作次数。而React提出了一个新的思路就是虚拟DOM：组件的HTML结构不再是直接生成DOM，而是映射生成虚拟的JavaScript DOM结构，React通过diff算法将最小变更写入DOM中，从而减少DOM的实际次数，提升性能
+
+React是一个UI框架，只负责渲染界面，不像angular一样大而全，用脚本进行DOM操作的代价很昂贵，所以要尽量减少用脚本操作DOM的次数，它主要运用了虚拟DOM的技术，它创造了虚拟dom并且将它们储存起来，每当状态发生变化的时候就会创造新的虚拟节点和以前的进行对比，让变化的部分进行渲染。
+
+一个React组件的构成有两部分：
+DOM视图
+state数据，它的状态决定着视图的状态
+
+简化的React组件模型：所谓组件，其实就是状态机器
+组件并不是一个新的概念，它意味着某个独立功能或界面的封装，达到复用、或是业务逻辑分离的目的。
+
+React将用户界面看做简单的状态机器。当组件处于某个状态时，那么就输出这个状态对应的界面。通过这种方式，就很容易去保证界面的一致性。
+
+在React中，你简单的去更新某个组件的状态，然后输出基于新状态的整个界面。React负责以最高效的方式去比较两个界面并更新DOM树。
+
+这种组件模型简化了我们思考的方式：对组件的管理就是对状态的管理。不同于其它框架模型，React组件很少需要暴露组件方法和外部交互。例如，某个组件有只读和编辑两个状态。一般的思路可能是提供beginEditing()和endEditing()这样的方法来实现切换；而在React中，需要做的是setState({editing: true/false})。在组件的输出逻辑中负责正确展现当前状态。这种方式，你不需要考虑beginEditing和endEditing中应该怎样更新UI，而只需要考虑在某个状态下，UI是怎样的。显然后者更加自然和直观。
+
+组件是React中构建用户界面的基本单位。它们和外界的交互除了状态（state）之外，还有就是属性（props）。事实上，状态更多的是一个组件内部去自己维护，而属性则由外部在初始化这个组件时传递进来（一般是组件需要管理的数据）。React认为属性应该是只读的，一旦赋值过去后就不应该变化。关于状态和属性的使用在后续文章中还会深入探讨
+
+完成的渲染流程
+初始化的渲染流程分为 3 步。
+第一步，开发者使用 JSX 语法写 React，babel 会将 JSX 编译为浏览器能识别的 React JS 语法。这一步，一般配合 webpack 在本地进行。
+第二步，执行 ReactDOM.render 函数，渲染出虚拟DOM。
+第三步，react 将虚拟DOM，渲染成真实的DOM。
+
+页面更新的流程同样也是 3 步。
+第一步，当页面需要更新时，通过声明式的方法，调用 setState 告诉 react。
+第二步，react 自动调用组件的 render 方法，渲染出虚拟 DOM。
+第三步，react 会通过 diffing 算法，对比当前虚拟 DOM 和需要更新的虚拟 DOM 有什么区别。然后重新渲染区别部分的真实 DOM。
+
+是一种声明式的编程，像HTML,SQL
+命令式编程：命令“机器”如何去做事情(how)，这样不管你想要的是什么(what)，它都会按照你的命令实现。
+声明式编程：告诉“机器”你想要的是什么(what)，让机器想出如何去做(how）
+Aspect Oriented Programming（面向方面编程，简称AOP）是一种声明式编程。
+声明式编程是和命令式编程相对的概念。我们平时使用的编程语言，比如C++、Java、Ruby、Python等，都属于命令式编程。命令式编程的意思是，程序员需要一步步写清楚程序需要如何做什么。
+声明式编程的意思是，程序员不需要一步步告诉程序如何做，只需要告诉程序在哪些地方做什么（Where to do What）。
+比起命令式编程来，声明式编程是在一个更高的层次上编程。
+声明式编程语言是更高级的语言，通常处理一些总结性、总览性的工作，不适合做顺序相关的细节相关的底层工作
+
+
+所以需要Redux，flux来管理数据层
+
+
+单向数据流动：Flux
+
+既然已经有了组件机制去定义界面，那么还需要一定的机制来定义组件之间，以及组件和数据模型之间如何通信。为此，Facebook提出了Flux框架用于管理数据流。Flux是一个相当宽松的概念框架，同样符合React简单直观的原则。不同于其它大多数MVC框架的双向数据绑定，Flux提倡的是单向数据流动，即永远只有从模型到视图的数据流动。
+
+Flux引入了Dispatcher和Action的概念：Dispatcher是一个全局的分发器负责接收Action，而Store可以在Dispatcher上监听到Action并做出相应的操作。简单的理解可以认为类似于全局的消息发布订阅模型。Action可以来自于用户的某个界面操作，比如点击提交按钮；也可以来自服务器端的某个数据更新。当数据模型发生变化时，就触发刷新整个界面。
+
+Redux:
+首先，redux并不是必须的，它的作用相当于在顶层组件之上又加了一个组件，作用是进行逻辑运算、储存数据和实现组件尤其是顶层组件的通信。如果组件之间的交流不多，逻辑不复杂，只是单纯的进行视图的渲染，这时候用回调，context就行，没必要用redux，用了反而影响开发速度。但是如果组件交流特别频繁，逻辑很复杂，那redux的优势就特别明显了
+先简单说一下redux和react是怎么配合的。react-redux提供了connect和Provider两个好基友，它们一个将组件与redux关联起来，一个将store传给组件。
+组件通过dispatch发出action，
+store根据action的type属性调用对应的reducer并传入state和这个action，
+reducer对state进行处理并返回一个新的state放入store
+connect监听到store发生变化，调用setState更新组件，此时组件的props也就跟着变化。
+
+connect，Provider，mapStateToProps,mapDispatchToProps是react-redux提供的，redux本身和react没有半毛钱关系，它只是数据处理中心，没有和react产生任何耦合，是react-redux让它们联系在一起
+
+如果只使用redux，那么流程是这样的：
+
+component --> dispatch(action) --> reducer --> subscribe --> getState --> component
+
+用了react-redux之后流程是这样的：
+
+component --> actionCreator(data) --> reducer --> component
+
+下面是一个完整的 react --> redux --> react 流程：
+
+一、Provider组件接受redux的store作为props，然后通过context往下传。
+
+二、connect函数在初始化的时候会将mapDispatchToProps对象绑定到store，如果mapDispatchToProps是函数则在Connect组件获得store后，根据传入的store.dispatch和action通过bindActionCreators进行绑定，再将返回的对象绑定到store，connect函数会返回一个wrapWithConnect函数，同时wrapWithConnect会被调用且传入一个ui组件，wrapWithConnect内部使用class Connect extends Component定义了一个Connect组件，传入的ui组件就是Connect的子组件，然后Connect组件会通过context获得store，并通过store.getState获得完整的state对象，将state传入mapStateToProps返回stateProps对象、mapDispatchToProps对象或mapDispatchToProps函数会返回一个dispatchProps对象，stateProps、dispatchProps以及Connect组件的props三者通过Object.assign()，或者mergeProps合并为props传入ui组件。然后在ComponentDidMount中调用store.subscribe，注册了一个回调函数handleChange监听state的变化。
+
+三、此时ui组件就可以在props中找到actionCreator，当我们调用actionCreator时会自动调用dispatch，在dispatch中会调用getState获取整个state，同时注册一个listener监听state的变化，store将获得的state和action传给combineReducers，combineReducers会将state依据state的key值分别传给子reducer，并将action传给全部子reducer，reducer会被依次执行进行action.type的判断，如果有则返回一个新的state，如果没有则返回默认。combineReducers再次将子reducer返回的单个state进行合并成一个新的完整的state。此时state发生了变化。dispatch在state返回新的值之后会调用所有注册的listener函数其中包括handleChange函数，handleChange函数内部首先调用getState获取新的state值并对新旧两个state进行浅对比，如果相同直接return，如果不同则调用mapStateToProps获取stateProps并将新旧两个stateProps进行浅对比，如果相同，直接return结束，不进行后续操作。如果不相同则调用this.setState()触发Connect组件的更新，传入ui组件，触发ui组件的更新，此时ui组件获得新的props，react --> redux --> react 的一次流程结束。
+
+上面的有点复杂，简化版的流程是：
+
+一、Provider组件接受redux的store作为props，然后通过context往下传。
+
+二、connect函数收到Provider传出的store，然后接受三个参数mapStateToProps，mapDispatchToProps和组件，并将state和actionCreator以props传入组件，这时组件就可以调用actionCreator函数来触发reducer函数返回新的state，connect监听到state变化调用setState更新组件并将新的state传入组件。
+
+connect可以写的非常简洁，mapStateToProps，mapDispatchToProps只不过是传入的回调函数，connect函数在必要的时候会调用它们，名字不是固定的，甚至可以不写名字。
+
+简化版本：
+
+connect(state => state, action)(Component);

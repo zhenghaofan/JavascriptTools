@@ -31,3 +31,6 @@ _position: absolute;
 _top:expression(documentElement.scrollTop+documentElement.clientHeight-this.offsetHeight);
 _left:expression(documentElement.scrollLeft+documentElement.clientWidth-this.offsetWidth-200);
 }
+
+transform下position:fixed定位失效的问题：
+移动端尽量不用position:fixed的问题，通过动态添加底部按钮的方式解决
