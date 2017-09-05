@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ball</title>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+<script type="text/javascript">
+    var el = document.getElementById('canvas');
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    el.width = width;
+    el.height = height;
+
+    var ctx = el.getContext('2d'),
+        raf, balls = [], crashCount = 0;
+
+    function random(x, y) {
+        return x + Math.round(Math.random() * (y - x));
+    }
+
+    var Ball = function(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = random(2, 10);
+        this.vy = random(1, 5);
+    }
+
+    Ball.prototype.draw = function() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 25, 0, Math.PI * 2, true);
+        ctx.closePath();
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+    }
+
+    Ball.prototype.update = function() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.y + this.vy > el.height || this.y + this.vy < 0) {
+            this.vy = -this.vy;
+        }
+        if (this.x + this.vx > el.width || this.x + this.vx < 0) {
+            this.vx = -this.vx;
+        }
+        this.draw();
+    }
+
+
+    // var ball = new Ball(100, 100);
+
+    function createBalls(count) {
+        for (var i = 0; i < count; i++) {
+            var ball = new Ball(random(0, width), random(0, height));
+            balls.push(ball);
+        }
+    }
+
+    function isCrash(obj1, obj2) {
+        var x = obj1.x - obj2.x;
+        var y = obj1.y - obj2.y;
+        var distance = Math.sqrt(x * x + y * y); //开方函数
+        if (distance < 50) { //判断碰撞
+            obj1.vx = -obj1.vx;
+            obj1.vy = -obj1.vy;
+            obj2.vx = -obj2.vx;
+            obj2.vy = -obj2.vy;
+            crashCount++;
+        }
+    }
+
+    function isBallsCrash(balls) {
+        for (var i = 0; i < balls.length; i++) {
+            for(var k = i + 1; k < balls.length; k++) {
+                isCrash(balls[i], balls[k])
+            }
+        }
+    }
+
+    function renderText() {
+        ctx.font = "48px serif";
+        ctx.fillText("Hit count: " + crashCount, 10, 50);
+    }
+
+    function render() {
+        ctx.clearRect(0, 0, width, height);
+        isBallsCrash(balls);
+        renderText();
+        balls.forEach(function(ball) {
+            // ball.draw();
+            ball.update();
+        })
+        raf = window.requestAnimationFrame(render);
+    }
+
+    // canvas.addEventListener('mouseover', function(e) {
+    //     raf = window.requestAnimationFrame(draw);
+    // });
+    //
+    // canvas.addEventListener('mouseout', function(e) {
+    //     window.cancelAnimationFrame(raf);
+    // });
+
+    // window.requestAnimationFrame(draw);
+    createBalls(8);
+    render()
+</script>
+
+</html>

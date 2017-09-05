@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+
+<body>
+    <canvas id="canvas" width="300" height="300" style="background-color: #000;margin: 0 auto; display: block"></canvas>
+    <div style="text-align: center">
+        <button type="button" id="play">播放</button>
+    </div>
+    <script type="text/javascript">
+        var canvas = document.getElementById('canvas')
+        var ctx = canvas.getContext('2d'),
+            t = 1,
+            vectors = [];
+        ctx.strokeStyle = 'white';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 3;
+        canvas.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            vectors = []
+            var x1 = e.pageX - canvas.offsetLeft;
+            var y1 = e.pageY - canvas.offsetTop;
+            vectors.push({
+                x: x1,
+                y: y1
+            });
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            canvas.addEventListener('mousemove', mousemoveHandler);
+            canvas.addEventListener('mouseup', mouseupHandler)
+        })
+
+        function mousemoveHandler(ev) {
+            var x2 = ev.pageX - canvas.offsetLeft;
+            var y2 = ev.pageY - canvas.offsetTop;
+            vectors.push({
+                x: x2,
+                y: y2
+            });
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+        }
+
+        function mouseupHandler(ev) {
+            // vectors = [];
+            canvas.removeEventListener('mousemove', mousemoveHandler);
+            canvas.removeEventListener('mouseup', mouseupHandler);
+        }
+
+        // function calcWaypoints(vectors) {
+        //     var waypoints = [];
+        //     for (var i = 1; i < vectors.length; i++) {
+        //         var pt0 = vectors[i - 1];
+        //         var pt1 = vectors[i];
+        //         var dx = pt1.x - pt0.x;
+        //         var dy = pt1.y - pt1.y;
+        //         for (var j = 0; j < 2; j++) {
+        //             var x = pt0.x + dx * j / 2;
+        //             var y = pt0.y + dy * j / 2;
+        //             waypoints.push({
+        //                 x: x,
+        //                 y: y
+        //             })
+        //         }
+        //     }
+        //     return waypoints;
+        // }
+
+        function draw(arr) {
+            setInterval(function() {
+                if (t < arr.length - 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(arr[t - 1].x, arr[t - 1].y);
+                    ctx.lineTo(arr[t].x, arr[t].y);
+                    ctx.stroke();
+                    t++;
+                }
+            }, 1)
+            // requestAnimationFrame(draw);
+        }
+
+        document.getElementById('play').onclick = function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            // var points = calcWaypoints(vectors);
+            // draw(points);
+            draw(vectors)
+        }
+    </script>
+</body>
+
+</html>

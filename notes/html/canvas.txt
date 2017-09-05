@@ -9,17 +9,41 @@ ctx.fillStyle="#FF0000";//红色
 ctx.fillRect(0,0,150,75);//矩形
 </script>
 
+绘制矩形：
+fillRect(x, y, width, height) 绘制填充矩形
+strokeRect(x, y, width, height) 绘制边框矩形
+clearRect(x, y, width, height) 清除矩形区域
+
 绘制路径：
 moveTo(x,y)定义开始坐标，lineTo(x,y)定义结束坐标，stroke()绘制，如：
+当你调用fill()函数时，所有没有闭合的形状都会自动闭合，所以你不需要调用closePath()函数。但是调用stroke()时不会自动闭合。
 <script>
 var c=document.getElementById("mycanvas");
 var ctx=c.getContext("2d");
-ctx.moveTo(0,0);
-ctx.lineTo(200,100);
+// 填充三角形
+ctx.beginPath();
+ctx.moveTo(25,25);
+ctx.lineTo(105,25);
+ctx.lineTo(25,105);
+ctx.fill();
+
+// 描边三角形
+ctx.beginPath();
+ctx.moveTo(125,125);
+ctx.lineTo(125,45);
+ctx.lineTo(45,125);
+ctx.closePath();
 ctx.stroke();
 </script>
 
 绘制圆形：
+arc(x, y, radius, startAngle, endAngle, anticlockwise)
+画一个以（x,y）为圆心的以radius为半径的圆弧（圆），从startAngle开始到endAngle结束，按照anticlockwise给定的方向（默认为顺时针）来生成。
+arc()函数中的角度单位是弧度，不是度数。角度与弧度的js表达式:radians=(Math.PI/180)*degrees
+
+arcTo(x1, y1, x2, y2, radius)
+根据给定的控制点和半径画一段圆弧，再以直线连接两个控制点
+
 <script>
 var c=document.getElementById("mycanvas");
 var ctx=c.getContext("2d");
@@ -27,6 +51,36 @@ ctx.beginPath();
 ctx.arc(95,50,40,0,2*Math.PI);
 ctx.stroke()
 </script>
+
+二次贝塞尔曲线及三次贝塞尔曲线
+下一个十分有用的路径类型就是 贝塞尔曲线。二次及三次贝塞尔曲线都十分有用，一般用来绘制复杂有规律的图形。
+
+quadraticCurveTo(cp1x, cp1y, x, y)
+绘制二次贝塞尔曲线，cp1x,cp1y为一个控制点，x,y为结束点。
+bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+绘制三次贝塞尔曲线，cp1x,cp1y为控制点一，cp2x,cp2y为控制点二，x,y为结束点。
+// 二次贝尔赛曲线绘制聊天气泡
+   ctx.beginPath();
+   ctx.moveTo(75,25);
+   ctx.quadraticCurveTo(25,25,25,62.5);
+   ctx.quadraticCurveTo(25,100,50,100);
+   ctx.quadraticCurveTo(50,120,30,125);
+   ctx.quadraticCurveTo(60,120,65,100);
+   ctx.quadraticCurveTo(125,100,125,62.5);
+   ctx.quadraticCurveTo(125,25,75,25);
+   ctx.stroke();
+
+   //三次贝塞尔曲线绘制心形
+     ctx.beginPath();
+     ctx.moveTo(75,40);
+     ctx.bezierCurveTo(75,37,70,25,50,25);
+     ctx.bezierCurveTo(20,25,20,62.5,20,62.5);
+     ctx.bezierCurveTo(20,80,40,102,75,120);
+     ctx.bezierCurveTo(110,102,130,80,130,62.5);
+     ctx.bezierCurveTo(130,62.5,130,25,100,25);
+     ctx.bezierCurveTo(85,25,75,37,75,40);
+     ctx.fill();
+
 
 绘制文本：
 ctx.font="30px Arial";

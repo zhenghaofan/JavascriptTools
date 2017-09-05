@@ -1,0 +1,14 @@
+virtual-dom库由以下四部分构成：
+1.vtree: 比较两个虚拟DOM节点的不同
+2.vdom: 根据vtree比较出来的不同，将不同之处渲染到真实DOM上
+3.vnode: 虚拟DOM节点
+4.virtual-hyperscript: 从数据结构中生成虚拟DOM节点
+
+vnode:
+DOM节点的虚拟表示，参数有标签名，属性，子节点，标识（虚拟节点ID，在vtree比较时使用），namespace
+vtext:
+文本节点的虚拟表示，参数是文本
+
+hooks:当一个vnode转换成真实节点被创建时, 执行函数的钩子
+thunk: 控制比较DOM子树之间的不同
+widget: 用于DOM节点不同之后的更新, 包括更新、删除节点等
