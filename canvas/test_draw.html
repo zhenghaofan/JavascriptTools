@@ -53,7 +53,6 @@
 
         function mouseupHandler(ev) {
             // vectors = [];
-            console.log(vectors.length);
             if (vectors.length > 0) {
                 paints.push(vectors);
                 vectors = [];
@@ -99,13 +98,28 @@
 
         document.getElementById('play').onclick = function() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // var i = 0;
-            console.log(paints);
             if (paints.length > 0) {
+                // setTimeout(function() {
+                //     draw(paints[0]);
+                //     setTimeout(function() {
+                //         draw(paints[1]);
+                //         setTimeout(function() {
+                //             draw(paints[2])
+                //         }, 1000)
+                //     }, 1000)
+                // }, 1000);
                 draw(paints[0]);
-                setTimeout(function() {
-                    draw(paints[1]);
-                }, 1000)
+                (function(arr) {
+                    var i = 1;
+                    length = arr.length;
+                    (function a() {
+                        setTimeout(function() {
+                            if (i < length)
+                                draw(arr[i++]);
+                            a();
+                        }, 1000);
+                    }())
+                }(paints));
             }
             // draw(vectors)
             // var points = calcWaypoints(vectors);
