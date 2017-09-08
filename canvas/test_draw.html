@@ -14,12 +14,16 @@
     <script type="text/javascript">
         var canvas = document.getElementById('canvas')
         var ctx = canvas.getContext('2d'),
-            // t = 1,
+            t1 = null,
+            times = [],
             vectors = [],
             paints = [];
         ctx.strokeStyle = 'white';
         ctx.lineCap = 'round';
         ctx.lineWidth = 3;
+        canvas.addEventListener('mousemove', function() {
+            canvas.style.cursor = "url('./paint.cur'), auto";
+        });
         canvas.addEventListener('mousedown', function(e) {
             e.preventDefault();
             // if (vectors.length > 0) {
@@ -34,11 +38,13 @@
             });
             ctx.beginPath();
             ctx.moveTo(x1, y1);
+            t1 = Date.now();
             canvas.addEventListener('mousemove', mousemoveHandler);
             canvas.addEventListener('mouseup', mouseupHandler)
         })
 
         function mousemoveHandler(ev) {
+            // canvas.style.cursor = 'pointer'
             var x2 = ev.pageX - canvas.offsetLeft;
             var y2 = ev.pageY - canvas.offsetTop;
             vectors.push({
@@ -57,6 +63,8 @@
                 paints.push(vectors);
                 vectors = [];
             }
+            var t = Date.now() - t1;
+            times.push(t);
             canvas.removeEventListener('mousemove', mousemoveHandler);
             canvas.removeEventListener('mouseup', mouseupHandler);
         }
@@ -98,6 +106,7 @@
 
         document.getElementById('play').onclick = function() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.log(times);
             if (paints.length > 0) {
                 // setTimeout(function() {
                 //     draw(paints[0]);
@@ -108,22 +117,54 @@
                 //         }, 1000)
                 //     }, 1000)
                 // }, 1000);
-                draw(paints[0]);
-                (function(arr) {
-                    var i = 1;
-                    length = arr.length;
-                    (function a() {
+                // (function(arr) {
+                //     var i = 1;
+                //     length = arr.length;
+                //     (function a() {
+                //         setTimeout(function() {
+                //             if (i < length)
+                //                 draw(arr[i++]);
+                //             a();
+                //         }, 800);
+                //     }())
+                // }(paints));
+                // draw(paints[0]);
+                // function drawArr(arr) {
+                //     var i = 0, length = arr.length;
+                //     function drawSingle() {
+                //         setTimeout(function() {
+                //             if (i < length) {
+                //                 draw(arr[i]);
+                //                 i++;
+                //             } else {
+                //                 return;
+                //             }
+                //             drawSingle();
+                //         }, 800);
+                //     }
+                //     drawSingle();
+                // }
+                // drawArr(paints);
+
+                function drawArr(arr, intervalArr) {
+                    var i = 0, length = arr.length;
+                    function drawSingle(j) {
+                        // var temp = j;
                         setTimeout(function() {
-                            if (i < length)
-                                draw(arr[i++]);
-                            a();
-                        }, 1000);
-                    }())
-                }(paints));
+                            if (i < length) {
+                                draw(arr[i]);
+                                i++;
+                            } else {
+                                return;
+                            }
+                            drawSingle(i);
+                        }, intervalArr[j]);
+                    }
+                    drawSingle(i);
+                }
+                drawArr(paints, times);
             }
-            // draw(vectors)
-            // var points = calcWaypoints(vectors);
-            // draw(points);
+
         }
     </script>
 </body>
