@@ -38,7 +38,11 @@
             });
             ctx.beginPath();
             ctx.moveTo(x1, y1);
-            t1 = Date.now();
+            // t1 = Date.now();
+            if (t1) {
+                var t = Date.now() - t1;
+                times.push(t)
+            }
             canvas.addEventListener('mousemove', mousemoveHandler);
             canvas.addEventListener('mouseup', mouseupHandler)
         })
@@ -63,8 +67,9 @@
                 paints.push(vectors);
                 vectors = [];
             }
-            var t = Date.now() - t1;
-            times.push(t);
+            t1 = Date.now()
+            // var t = Date.now() - t1;
+            // times.push(t);
             canvas.removeEventListener('mousemove', mousemoveHandler);
             canvas.removeEventListener('mouseup', mouseupHandler);
         }
@@ -145,9 +150,9 @@
                 //     drawSingle();
                 // }
                 // drawArr(paints);
-
+                draw(paints[0])
                 function drawArr(arr, intervalArr) {
-                    var i = 0, length = arr.length;
+                    var i = 1, length = arr.length;
                     function drawSingle(j) {
                         // var temp = j;
                         setTimeout(function() {
@@ -158,7 +163,7 @@
                                 return;
                             }
                             drawSingle(i);
-                        }, intervalArr[j]);
+                        }, intervalArr[j - 1]);
                     }
                     drawSingle(i);
                 }
