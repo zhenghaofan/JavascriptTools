@@ -3,6 +3,7 @@ var ctx = canvas.getContext('2d');
 var player = videojs('myplayer');
 
 var t1, times, vectors, paints;
+var results = [];
 
 ctx.strokeStyle = 'white';
 ctx.lineCap = 'round';
@@ -16,10 +17,16 @@ function init() {
 }
 
 init();
+
 $('.pen').click(function() {
     player.pause();
-    $('.drawing').show();
+    $('.drawing').toggle();
     $('#myplayer').addClass('player-drawing');
+    if (!$('.drawing').is(':visible')) {
+        $('#myplayer').removeClass('player-drawing');
+        player.play();
+        return;
+    }
     canvas.addEventListener('mousedown', function(e) {
         e.preventDefault();
         var x1 = e.pageX - canvas.offsetLeft;
@@ -106,15 +113,32 @@ $('.draw-play').click(function() {
     }
 })
 
-$('.redraw').click(function() {
-    redraw();
-})
-
 function redraw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     init();
 }
 
+$('.save').click(function() {
+    var _playTime = player.currentTime();
+    var obj = {
+        playTime: _playTime,
+        paints: paints,
+        intervals: times
+    }
+    if(obj.paints.length > 0) {
+        results.push(obj);
+    }
+    console.log(results);
+    $('.drawing').hide();
+    player.play();
+});
+
+$('.redraw').click(function() {
+    redraw();
+})
+
 player.on('play', function() {
+    $('.drawing').hide();
+    $('#myplayer').removeClass('player-drawing');
     redraw();
 })
