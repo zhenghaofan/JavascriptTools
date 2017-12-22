@@ -55,7 +55,7 @@ CSS顶部，JS底部；
 DOM元素的读写分离与批量操作，降低样式计算的范围和复杂度，读取计算所需的DOM属性，执行计算逻辑，批量修改DOM
 JS控制的动画效果 使用requestAnimateFrame代替setTimeout和setInterval；
 提升动画中移动或渐变元素的绘制层，应用了transform|opacity|backface-visibility的元素会独占一个渲染层, 从而跳过绘制阶段；提升动画元素到新的绘制层：
-transform: translateZ(0);
+transform: translateZ(0);可以让CPU硬件加速
 will-change: auto | scroll-position | contents | opacity | [ transform | left, top ] ; will-change: transform;
 使用ajax响应用户的部分操作而不需刷新页面
 
