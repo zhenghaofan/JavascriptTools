@@ -1,0 +1,124 @@
+HTML历史：
+1991诞生，1999年发布HTML4.01,2000年发布XHTML1.0，2012年发布HTML5, 2013年发布XHTML5
+
+HTML5新特性：
+1.用于绘画的canvas
+2.用于播放媒体的video,audio
+3.对本地离线存储的支持
+4.特殊内容元素：article,header,footer,nav,section
+5.新的表单控件：calendar,date,time,emaile,url,search
+
+HTML5 定了 8 个新的 HTML 语义（semantic） 元素。所有这些元素都是 块级 元素。
+
+为了能让旧版本的浏览器正确显示这些元素，你可以设置 CSS 的 display 属性值为 block:
+
+header, section, footer, aside, nav, main, article, figure {
+    display: block; 
+}
+JavaScript 语句 document.createElement("myHero") 是为了为 IE 浏览器添加新的元素。
+
+Internet Explorer 浏览器问题，Internet Explorer 8 及更早 IE 版本的浏览器不支持以上的方式创建新元素。
+<!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+以上代码是一个注释，作用是在 IE 浏览器的版本小于 IE9 时将读取 html5.js 文件，并解析它。
+<!--[if lt IE 9]>
+  <script src="http://apps.bdimg.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+<![endif]-->
+针对IE浏览器html5shiv 是比较好的解决方案。html5shiv主要解决HTML5提出的新的元素不被IE6-8识别， 必须添加在head中，因为IE 浏览器在解析 HTML5 新元素时需要先加载该文件。
+
+移除的元素：
+acronym,applet,basefont,big,center,dir,font,frame,frameset,noframes,strike,tt,center
+
+所有新元素：
+canvas
+多媒体：
+audio,video,source,embed,track
+
+表单：
+datalist,keygen用于表单中元素加密，如<keygen name="security">,output
+
+结构元素：
+section用于定义文档的区域
+article用于定义独立的内容，必须独立于其他部分，如博客文章，新闻故事，评论等
+aside定义article之外的内容，与article内容相关，如文章的侧栏
+bdi,command,
+details定义隐藏内容的细节，与summary配合使用可以有下拉效果，如
+<details>
+<summary>Copyright 1999-2011.</summary>
+<p> - by Refsnes Data. All Rights Reserved.</p>
+<p>All content and graphics on this web site are the property of the company Refsnes Data.</p>
+</details>
+
+dialog,summary,figure,footer,header,mark,meter,progress,rt,rp,ruby,section,time,wbr
+
+nav定义导航链接的部分，如：
+<nav>
+<a href="/html/">HTML</a> |
+<a href="/css/">CSS</a> |
+<a href="/js/">JavaScript</a> |
+<a href="/jquery/">jQuery</a>
+</nav>
+
+HTML5新的input类型：<input type="" form="form1"/> form1为formID
+color,date,datetime,datetime-local,email,month,number,range,search,tel,time,url, week
+input新属性：autocomplete,autofocus,placeholder,required,form,formaction(可以提交到多个URL),min,max,multiple,pattern(匹配正则),step(根据间隔输入数字)
+<input type="date" name="bday" max="1979-12-31" min="2000-01-02">
+上传多个文件：Select images: <input type="file" name="img" multiple>
+form新属性：autocomplete,novalidate
+
+HTML5数据存储：
+localStorage 没有时间限制的数据存储， sessionStorage 存储session数据
+在使用 web 存储前,应检查浏览器是否支持 localStorage 和sessionStorage:
+
+if(typeof(Storage)!=="undefined")
+  {
+  // Yes! localStorage and sessionStorage support!
+  // Some code.....
+  }
+else
+  {
+  // Sorry! No web storage support..
+  }
+
+应用程序缓存：运行机制是每个需要离线使用的网页都知道一个后缀名为.appcache的文本文件， 这个文件罗列了该网页离线使用的所有资源文件，支持离线应用的浏览器会自动读取.manifest文件下载文件中的资源文件缓存到本地以便离线时使用
+通过创建cache manifest文件：
+<html manifest="demo.appcache"></html>
+每个指定了 manifest 的页面在用户对其访问时都会被缓存。如果未指定 manifest 属性，则页面不会被缓存（除非在 manifest 文件中直接指定了该页面）
+Tmanifest 文件的建议的文件扩展名是：".appcache"
+请注意，manifest 文件需要配置正确的 MIME-type，即 "text/cache-manifest"。必须在 web 服务器上进行配置。
+
+Web Worker:
+在创建 web worker 之前，请检测用户的浏览器是否支持它：
+if(typeof(Worker)!=="undefined")
+  {
+  // Yes! Web worker support!
+  // Some code.....
+  }
+else
+  {
+  // Sorry! No Web Worker support..
+  }
+创建demo_workeers.js:
+var i=0;
+
+function timedCount()
+{
+i=i+1;
+postMessage(i);
+setTimeout("timedCount()",500);
+}
+
+timedCount();
+调用Web Worker:
+if(typeof(w)=="undefined")
+  {
+  w=new Worker("demo_workers.js");
+  }
+向 web worker 添加一个 "onmessage" 事件监听器：
+
+w.onmessage=function(event){
+document.getElementById("result").innerHTML=event.data;
+};
+终止 Web Worker:
+w.terminate();

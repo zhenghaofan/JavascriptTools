@@ -1,0 +1,277 @@
+CSS3：
+重要模块：选择器、盒子模型、背景边框、文字特效、2D/3D转换、动画、多列布局、用户界面
+
+边框：
+border-radius创建圆角，直接设置像素，如border-radius:20px，四个值得顺序表示
+{border-radius:25px 50px 30px 30px} 顺序为左上，右上，右下，左下
+{border-radius:25px 50px 30px } 顺序为左上，右上和左下，右下
+{border-radius:25px 50px} 顺序为左上和右下，右上和左下
+椭圆边角：使用x px/ y px  或者 百分比 
+
+box-shadow添加阴影，如box-shadow: 10px 5px 5px #888888
+
+border-image创建图片边框(IE不支持)，如:
+border-image:url(border.png) 30 30 round;
+-webkit-border-image:url(border.png) 30 30 round; /* Safari 5 and older */
+-o-border-image:url(border.png) 30 30 round; /* Opera */
+
+背景：
+background-size指定背景图片大小，如：background-size: 80px 60px， 百分比形式表示相对于父元素的宽高百分比大小，background-size: 100% 100% 完全填充
+background-Origin指定背景图像的位置区域，值有3个，content-box,padding-box,border-box
+多个背景图像：在background-image属性中添加多个图片引用
+
+渐变：
+线性渐变：background: linear-gradient(direction,color-stop1,color-stop2,...)，如：
+#grad {
+ //从上到下
+  background: -webkit-linear-gradient(red, blue); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(red, blue); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(red, blue); /* Firefox 3.6 - 15 */
+  background: linear-gradient(red, blue); /* 标准的语法（必须放在最后） */
+}
+#grad {
+  //从左到右
+  background: -webkit-linear-gradient(left, red , blue); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(right, red, blue); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(right, red, blue); /* Firefox 3.6 - 15 */
+  background: linear-gradient(to right, red , blue); /* 标准的语法 （必须放在最后） */
+}
+#grad {
+  //从左上到右下
+  background: -webkit-linear-gradient(left top, red , blue); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(bottom right, red, blue); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(bottom right, red, blue); /* Firefox 3.6 - 15 */
+  background: linear-gradient(to bottom right, red , blue); /* 标准的语法 */
+}
+#grad {
+  //使用角度，180表示从上到下，0表示从下到上，90为从左到右
+  background: -webkit-linear-gradient(180deg, red, blue); /* Safari 5.1 - 6.0 */
+  background: -o-linear-gradient(180deg, red, blue); /* Opera 11.1 - 12.0 */
+  background: -moz-linear-gradient(180deg, red, blue); /* Firefox 3.6 - 15 */
+  background: linear-gradient(180deg, red, blue); /* 标准的语法 */
+}
+#grad {
+  //使用透明度，rgba()函数的最后一个参数表示透明度，1表示不透明
+  background: -webkit-linear-gradient(left,rgba(255,0,0,0),rgba(255,0,0,1)); /* Safari 5.1 - 6 */
+  background: -o-linear-gradient(right,rgba(255,0,0,0),rgba(255,0,0,1)); /* Opera 11.1 - 12*/
+  background: -moz-linear-gradient(right,rgba(255,0,0,0),rgba(255,0,0,1)); /* Firefox 3.6 - 15*/
+  background: linear-gradient(to right, rgba(255,0,0,0), rgba(255,0,0,1)); /* 标准的语法 */
+}
+#grad {
+  //重复的线性渐变
+  /* Safari 5.1 - 6.0 */
+  background: -webkit-repeating-linear-gradient(red, yellow 10%, green 20%);
+  /* Opera 11.1 - 12.0 */
+  background: -o-repeating-linear-gradient(red, yellow 10%, green 20%);
+  /* Firefox 3.6 - 15 */
+  background: -moz-repeating-linear-gradient(red, yellow 10%, green 20%);
+  /* 标准的语法 */
+  background: repeating-linear-gradient(red, yellow 10%, green 20%);
+}
+径向渐变：background: radial-gradient(center,shape size,start-color,...last-color)
+
+文本效果：
+text-shadow添加文本阴影，text-shadow: 5px(水平阴影) 5px(垂直阴影) 5px(模糊距离) #ffffff(阴影颜色)
+word-wrap可以强制文本换行，使用word-wrap:break-word
+
+字体：
+以前CSS的版本，网页设计师不得不使用用户计算机上已经安装的字体。使用CSS3，网页设计师可以使用他/她喜欢的任何字体。当你发现您要使用的字体文件时，只需简单的将字体文件包含在网站中，它会自动下载给需要的用户。
+使用@font-face定义自己使用的字体，如：
+<style> 
+@font-face
+{
+font-family: myFirstFont;//必需
+src: url(sansation_light.woff);//必需
+}
+
+div
+{
+font-family:myFirstFont;
+}
+</style>
+
+CSS3 2D：
+Internet Explorer 10, Firefox, 和 Opera支持transform 属性.Chrome 和 Safari 要求前缀 -webkit- 版本.Internet Explorer 9 要求前缀 -ms- 版本.
+translate()根据左(X轴)和顶部(Y轴)位置给定的参数，从当前元素位置移动。如：
+div
+{
+transform: translate(50px,100px);
+-ms-transform: translate(50px,100px); /* IE 9 */
+-webkit-transform: translate(50px,100px); /* Safari and Chrome */
+}
+rotate()在一个给定度数顺时针旋转的元素。负值是允许的，这样是元素逆时针旋转。如：
+div
+{
+transform: rotate(30deg);
+-ms-transform: rotate(30deg); /* IE 9 */
+-webkit-transform: rotate(30deg); /* Safari and Chrome */
+}
+scale()该元素增加或减少的大小，取决于宽度（X轴）和高度（Y轴）的参数，如：
+div
+{
+transform: scale(2,4);//宽度为原来2倍，高度为原来4倍
+-ms-transform: scale(2,4); /* IE 9 */
+-webkit-transform: scale(2,4); /* Safari and Chrome */
+}
+skew()该元素会根据横向（X轴）和垂直（Y轴）线参数给定角度，如：
+div
+{
+transform: skew(30deg,20deg);
+-ms-transform: skew(30deg,20deg); /* IE 9 */
+-webkit-transform: skew(30deg,20deg); /* Safari and Chrome */
+}
+matrix()合并所有2D方法，有6个参数，包括旋转，缩放，移动，倾斜，如：
+div
+{
+transform:matrix(0.866,0.5,-0.5,0.866,0,0);//旋转div元素30度
+-ms-transform:matrix(0.866,0.5,-0.5,0.866,0,0); /* IE 9 */
+-webkit-transform:matrix(0.866,0.5,-0.5,0.866,0,0); /* Safari and Chrome */
+}
+转换属性transform可用于2D或3D转换
+
+3D转换：
+Internet Explorer 10 和 Firefox 支持 3D 转换.Chrome 和 Safari 必须添加前缀 -webkit-.
+rotateX()围绕X轴旋转给定度数的元素，如：
+div
+{
+transform: rotateX(120deg);
+-webkit-transform: rotateX(120deg); /* Safari and Chrome */
+}
+rotateY()同理
+其他方法类似2D，有：matrix3d(n,n,n,...n),translate3d(x,y,z),translateX(x),scale3d(x,y,z),scaleX(x),rotate3d(x,y,z,angle),rotateX(angle)(围绕X轴的3d旋转),perspective(n)(定义转换元素的透视视图)
+
+过渡：transition
+CSS3 过渡是元素从一种样式逐渐改变为另一种的效果。要实现这一点，必须规定两项内容：
+指定要添加效果的CSS属性;指定效果的持续时间。
+Internet Explorer 10, Firefox, Opera, Chrome, 和Opera 支持transition 属性.Safari 需要前缀 -webkit-。Internet Explorer 9 以及更早的版本，不支持 transition 属性。Chrome 25 以及更早的版本，需要前缀 -webkit-。
+例子：
+//鼠标上移后2秒内宽度改变
+div
+{
+transition: width 2s;
+-webkit-transition: width 2s; /* Safari */
+}
+div:hover
+{
+width:300px;
+}
+//多项改变
+div
+{
+transition: width 2s, height 2s, transform 2s;
+-webkit-transition: width 2s, height 2s, -webkit-transform 2s;
+}
+transition-property定义属性，transition-duration定义时间，transition-timing-function定义过渡效果的时间曲线，默认为ease（慢速开始，然后变快再变慢），linear（以相同速度从头到尾）transition-delay定义何时开始过渡，
+全部可以简写为：
+div
+{
+transition: width 1s linear 2s;
+/* Safari */
+-webkit-transition:width 1s linear 2s;
+}
+
+动画：@keyframes 关键帧，animation
+Internet Explorer 10、Firefox 以及 Opera 支持 @keyframes 规则和 animation 属性。
+Chrome 和 Safari 需要前缀 -webkit-。Internet Explorer 9，以及更早的版本，不支持 @keyframe 规则或 animation 属性。
+例子：
+//首先定义动画
+@keyframes myfirst
+{
+from {background: red;}
+to {background: yellow;}
+}
+
+@-webkit-keyframes myfirst /* Safari and Chrome */
+{
+from {background: red;}
+to {background: yellow;}
+}
+//接着捆绑到指定元素，添加至少两个动画属性：动画名称及动画时长，如果省略的持续时间，动画将无法运行，因为默认值是0。
+div
+{
+animation: myfirst 5s;
+-webkit-animation: myfirst 5s; /* Safari and Chrome */
+}
+
+升级版：
+@keyframes myfirst
+{
+0%   {background: red; left:0px; top:0px;}
+25%  {background: yellow; left:200px; top:0px;}
+50%  {background: blue; left:200px; top:200px;}
+75%  {background: green; left:0px; top:200px;}
+100% {background: red; left:0px; top:0px;}
+}
+
+@-webkit-keyframes myfirst /* Safari and Chrome */
+{
+0%   {background: red; left:0px; top:0px;}
+25%  {background: yellow; left:200px; top:0px;}
+50%  {background: blue; left:200px; top:200px;}
+75%  {background: green; left:0px; top:200px;}
+100% {background: red; left:0px; top:0px;}
+}
+
+设置所有属性：div
+{
+animation-name: myfirst;
+animation-duration: 5s;
+animation-timing-function: linear;
+animation-delay: 2s;
+animation-iteration-count: infinite;//播放次数，无限循环
+animation-direction: alternate;//动画下周起是否逆向播放
+animation-play-state: running;//动画是否正在运行或暂停
+/* Safari and Chrome: */
+-webkit-animation-name: myfirst;
+-webkit-animation-duration: 5s;
+-webkit-animation-timing-function: linear;
+-webkit-animation-delay: 2s;
+-webkit-animation-iteration-count: infinite;
+-webkit-animation-direction: alternate;
+-webkit-animation-play-state: running;
+}
+简写为：
+div
+{
+animation: myfirst 5s linear 2s infinite alternate;
+/* Safari and Chrome: */
+-webkit-animation: myfirst 5s linear 2s infinite alternate;
+}
+
+CSS3多列：
+创建多个列来对文本进行布局，使用column-count,column-gap,column-rule
+Internet Explorer 10 和 Opera 支持多列属性。Firefox 需要前缀 -moz-。Chrome 和 Safari 需要前缀 -webkit-。Internet Explorer 9 以及更早的版本不支持多列属性。
+划分成三列的div元素的文本：
+div
+{
+-moz-column-count:3; /* Firefox */
+-webkit-column-count:3; /* Safari and Chrome */
+column-count:3;
+}
+指定列之间40个像素差距：
+div
+{
+-moz-column-gap:40px; /* Firefox */
+-webkit-column-gap:40px; /* Safari and Chrome */
+column-gap:40px;
+}
+指定列之间的宽度，样式和颜色的规则：
+div
+{
+-moz-column-rule:3px outset #ff00ff; /* Firefox */
+-webkit-column-rule:3px outset #ff00ff; /* Safari and Chrome */
+column-rule:3px outset #ff00ff;
+}
+
+用户界面：
+resize,box-sizing,outline-offset
+Firefox、Chrome 以及 Safari 支持 resize 属性。
+Internet Explorer、Chrome、Safari 以及 Opera 支持 box-sizing 属性。Firefox 需要前缀 -moz-。
+所有主流浏览器都支持 outline-offset 属性，除了 Internet Explorer。
+resize定义用户是否可以自由调整元素尺寸，none无法调整，both高宽可调，horizontal可调宽度，vertical可调高度
+box-sizing 属性允许您以确切的方式定义适应某个区域的具体内容。拥有content-box,border-box,inherit值
+outline-offset 属性对轮廓进行偏移，并在超出边框边缘的位置绘制轮廓。
+轮廓与边框有两点不同：
+轮廓不占用空间；轮廓可能是非矩形
+
+flex

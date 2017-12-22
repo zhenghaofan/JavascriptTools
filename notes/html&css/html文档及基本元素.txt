@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!DOCTYPE> 用来告知 Web 浏览器当前页面使用的HTML或XTML 版本。在 HTML 4.01 中，<!DOCTYPE> 声明需引用 DTD （Document Type Definition 文档类型声明），因为 HTML 4.01 是基于 SGML （Standard Generalized Markup Language 标准通用标记语言）。
+DTD指定了标记语言的规则，确保了浏览器能够正确的渲染内容。HTML5 不是基于 SGML，因此不要求引用 DTD。
+只有确定了一个正确的DOCTYPE，XHTML里的标识和CSS才能正常生效。doctype 声明是不区分大小写的，使用严格的DTD来制作页面，当然是最理想的方式。但是，对于没有深入了解Web标准的网页设计者，比较合适的是使用过渡的DTD。因为这种DTD还允许使用表现层的标识、元素和属性，比较适合大多数网页制作人员。
+通用声明
+HTML5 <!DOCTYPE html>
+HTML 4.01 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+XHTML 1.0 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+过渡的(Transitional，也叫混杂模式)：要求比较宽松，允许继续使用HTML4.01的标识，完整声明为 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-tranisitional.dtd">
+
+严格的(Strict)：要求严格的DTD，不能使用任何表现层的标识和属性，完整声明为
+<!DOCTYPE html PUBLIC "-W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+框架的(Frameset)专门针对框架页面设计使用的DTD，如果页面中包含有框架，可以采用DTD，完整声明为
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+
+该标签可声明三种 DTD 类型，分别表示严格版本、过渡版本以及基于框架的 HTML 文档。
+严格模式：
+HTML 4.01 Strict
+该 DTD 包含所有 HTML 元素和属性，但不包括展示性的和弃用的元素（比如 font）。不允许框架集（Framesets）
+过渡版本：
+HTML 4.01 Transitional
+该 DTD 包含所有 HTML 元素和属性，包括展示性的和弃用的元素（比如 font）。不允许框架集（Framesets）。
+基于框架的版本：
+HTML 4.01 Frameset
+该 DTD 等同于 HTML 4.01 Transitional，但允许框架集内容。
+
+如何触发这两种模式:
+浏览器根据DOCTYPE是否存在以及使用的哪种DTD来选择要使用的呈现方法。如果XHTML文档包含形式完整的DOCTYPE，那么它一般以标准模式 呈现。对于HTML 4.01文档，包含严格DTD的DOCTYPE常常导致页面以标准模式呈现。包含过渡DTD和URI的DOCTYPE也导致页面以标准模式呈现，但是有过 渡DTD而没有URI会导致页面以混杂模式呈现。DOCTYPE不存在或形式不正确会导致HTML和XHTML文档以混杂模式呈现。
+定义成相应的声明就可以触发相应的模式。区分的意义是决定浏览器如何渲染网站（浏览器使用那种规范去解析网页）
+
+强制浏览器以某种模式渲染页面可以在meta标签中设置：IE=edge表示以最新的形式渲染
+<meta http-equiv="X-UA-Compatible" content="IE=版本号">
+
+文本格式化：
+b（表示bold）将字体加粗，strong标签为了表明重点将字体加粗，（两者区别在于搜索引擎优化时strong更容易被蜘蛛抓取）big标签加大，small变小，em标签强调（使用斜体，与strong一样在搜索引擎比重高），i标签斜体，sub标签为下标，sup标签为上标
+pre标签是按源代码格式原型输出
+abbr用于显示加长标题，当鼠标移上去时显示，如：<abbr title="etcetera">etc</abbr>
+address用于显示文章的作者的联系信息，通常表现为斜体
+bdo用于定义文字方向，<bdo dir="rtl">反方向显示文字</bdo> ltr为正常显示
+q用于添加短引用，浏览器自动添加引号
+blockquote用于长的块引用
+del用于删除字，浏览器显示一横杠，ins用于显示添加字，浏览器显示下划线
+hr定义水平线，用法<hr/>
+br为添加空行，用法<br/>
+创建图片链接：<a><img src=""></a>
+创建电子邮件：<a href="mailto:someone@example.com?Subject=Hello%20again"></a>
+Note: 注释：请始终将正斜杠添加到子文件夹。假如这样书写链接：href="http://www.w3cschool.cc/html"，就会向服务器产生两次 HTTP 请求。这是因为服务器会添加正斜杠到这个地址，然后创建一个新的请求，正确写法：href="http://www.w3cschool.cc/html/"。
+select元素设置多选：<select name="" id="" multiple="multiple"><option></option></select>可用Ctrl键实现多选
+form表单中的label：label标签不会向用户呈现任何特殊效果，它的作用是为鼠标用户改进了可用性。如果你在 label 标签内点击文本，就会触发此控件。就是说，当用户单击选中该label标签时，浏览器就会自动将焦点转到和标签相关的表单控件上（就自动选中和该label标签相关连的表单控件上）。
+<label for="控件id名称">
+注意：标签的 for 属性中的值应当与相关控件的 id 属性值一定要相同。
+text-align元素为块状元素设置对齐方式
+
+head头部中：
+base标签描述了该文档的基本链接地址，如 <head><base href="http://www.aaa.com/"></base></head>
+link标签通常用于链接外部资源样式表，如 <head><link rel="stylesheet" type="text/css" href="aaa.css"></head>
+style元素定义头部链接式样式表，如 <head><style type="text/css">body {...}</style></head>
+meta描述了基本的元数据，如网页的描述，关键词，可被搜索引擎抓取，如 <meta name="keywords" content="我的网站"> 无结束标签
+
+body中：
+img 标签中alt表示可以替换图片的文本，用于当浏览器无法载入图片时显示文本
+可在img中定义align属性，定义图片在文档中的位置，默认align="bottom",还可以定义align="middle","top"
+
+map 标签定义图像地图， area定义地图中的可点击区域
+
+表格默认没有边框，加属性border=""显示，colspan表示横向扩充，rowspan表示纵向扩充，cellpadding可以使内容居中显示，cellspacing="0"表示边框之间无间隔，th定义表头，caption定义标题
+
+列表使用ul定义无序列表，ol定义有序列表，序号会加在前面，默认为数字，可以使用type="A"使用大写字母开始，type="I"使用罗马数字，使用style属性，style="list-style-type:disc或circle或square"定义不同样式
+自定义列表可添加项目与注释等等，使用dl开始，dt为自定义项，dd为注释
+
+表单中使用fieldset添加外边框，使用legend添加外边框的主标题，使用datalist元素(HTML5)可以定义当前输入框可能取得的值，action中添加mailto可以发电子邮件，如 
+<form action="MAILTO:aaa@qq.com">
+	<fieldset>
+		<legend>个人信息：</legend>
+		姓名： <input type="text"/>
+		<input list="browsers">
+		<datalist id="browsers">
+			<option value="IE"></option>
+			<option value="FF"></option>
+			<option value="Google Chrome"></option>
+		</datalist>
+	</fieldset>
+</form>
+
+css内定义的宽（width）和高（height），指的是填充以里的内容范围。
+因此一个元素实际宽度（盒子的宽度）=左边界+左边框+左填充+内容宽度+右填充+右边框+右边界，默认box-sizing:content-box，除了IE之外的计算方式
+也就是当子元素的内容超过父元素时， content-box方式会让子元素覆盖父元素， 父元素宽度保持不变；
+而border-box方式会改变父元素的宽度使父元素包含子元素，是IE的盒子模型，ie 盒子模型的 content 部分包含了 border 和 pading。
+
+框架iframe使用frameborder表示显示边框：<iframe src="aaa.html" frameborder="0" width="" height=""></iframe>
+使用框架打开指定链接，name属性与a的target相同：
+<iframe src="aaa.htm" name="iframe_a"></iframe>
+<p><a href="http://www.baidu.com" target="iframe_a">W3CSchool.cc</a></p>
+
+html内置的颜色名称有141个，17个标准颜色，设置颜色值有三种方式，如黄色：
+style="background-color: #FFFF00或rgb(255,255,0)或yellow"
+
+浏览器显示小于号：&lt; 或 &#60; 大于号：&gt;或 &#62;空格：&nbsp; &：&amp; "": &quot;
+
+URL统一资源定位符： scheme://host.domain:port/path/filename
+scheme为因特网服务类型，http、https; host为主机，默认为www
+URL字符编码只能使用ASCII字符集进行发送，如果不符合ASCII的字符必须进行转换

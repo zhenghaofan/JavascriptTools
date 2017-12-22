@@ -1,0 +1,47 @@
+XHTML:
+XHTML 是可扩展的超文本标记语言，它的目标是取代HTML，与HTML 4.01 几乎相同，是更严格的HTML版本，得到所有浏览器的支持，是一个 W3C 标准
+与 HTML 相比最重要的区别：
+文档结构：
+XHTML DOCTYPE 是强制性的
+<html> 中的 XML namespace 属性是强制性的
+<html>、<head>、<title> 以及 <body> 也是强制性的
+元素语法：
+XHTML 元素必须正确嵌套
+XHTML 元素必须始终关闭
+XHTML 元素必须小写
+XHTML 文档必须有一个根元素
+属性语法：
+XHTML 属性必须使用小写
+XHTML 属性值必须用引号包围
+XHTML 属性最小化也是禁止的
+
+这个一个简单的（最小化的） XHTML 文档：
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>simple document</title>
+</head>
+<body>
+<p>a simple paragraph</p>
+</body>
+</html>
+
+为什么使用XHMTL?
+HTML 与 XML（扩展标记语言）的结合物。XHTML 包含了所有与 XML 语法结合的 HTML 4.01 元素。
+XML 用来描述数据，而 HTML 则用来显示数据。
+今天的市场中存在着不同的浏览器技术，某些浏览器运行在计算机中，某些浏览器则运行在移动电话和手持设备上。而后者没有能力和手段来解释糟糕的标记语言。
+因此，通过把 HTML 和 XML 各自的长处加以结合，我们得到了在现在和未来都能派上用场的标记语言 - XHTML。
+XHTML 可以被所有的支持 XML 的设备读取，同时在其余的浏览器升级至支持 XML 之前，XHTML 使我们有能力编写出拥有良好结构的文档，这些文档可以很好地工作于所有的浏览器，并且可以向后兼容。
+
+如何将你的网站升级至 XHTML ？
+1.添加文件类型声明
+将下面的文件类型声明添加至每页的首行：
+<!DOCTYPE html PUBLIC
+"-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+2.小写的标签和属性名
+3.给所有属性加上引号
+4.空标签：<hr> , <br> 和 <img>全部加结束标记
+5.验证站点：做完所有这一切以后，使用下面的链接根据官方的 W3C DTD 对所有修改过的页面进行验证： XHTML Validator。接下来，可能还会有少数的错误被发现，逐一对这些错误进行（手工地）修正。我们的经验是，最容易犯的错误是在列表中漏掉了 </li> 标签。
