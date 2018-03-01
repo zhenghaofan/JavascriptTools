@@ -7,18 +7,29 @@
             body {
                 margin: 0;
                 padding: 0;
+                background: blue;
             }
             #box{
                 background: red;
-                height: 50px;
+                /*position: fixed;*/
+                /*top: 10px;
+                margin-top: 20px;*/
+                height: 750px;
                 width: 50px;
+            }
+            .inner {
+                position: sticky;
                 top: 10px;
                 margin-top: 20px;
+                width: 50px;
+                height: 50px;
+                background: green
             }
         </style>
     </head>
     <body>
         <div id="box">
+            <div class="inner"></div>
         </div>
     </body>
 </html>
