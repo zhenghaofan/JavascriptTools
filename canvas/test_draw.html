@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+
+<body>
+    <canvas id="canvas" width="300" height="300" style="background-color: #000;margin: 0 auto; display: block"></canvas>
+    <div style="text-align: center">
+        <button type="button" id="play">播放</button>
+    </div>
+    <script type="text/javascript">
+        var canvas = document.getElementById('canvas')
+        var ctx = canvas.getContext('2d'),
+            t1 = null,
+            times = [],
+            vectors = [],
+            paints = [];
+        ctx.strokeStyle = 'white';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 3;
+        canvas.addEventListener('mousemove', function() {
+            canvas.style.cursor = "url('./paint.cur'), auto";
+        });
+        canvas.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            // if (vectors.length > 0) {
+            //     paints.push(vectors);
+            //     vectors = []
+            // }
+            var x1 = e.pageX - canvas.offsetLeft;
+            var y1 = e.pageY - canvas.offsetTop;
+            vectors.push({
+                x: x1,
+                y: y1
+            });
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            // t1 = Date.now();
+            if (t1) {
+                var t = Date.now() - t1;
+                times.push(t)
+            }
+            canvas.addEventListener('mousemove', mousemoveHandler);
+            canvas.addEventListener('mouseup', mouseupHandler)
+        })
+
+        function mousemoveHandler(ev) {
+            // canvas.style.cursor = 'pointer'
+            var x2 = ev.pageX - canvas.offsetLeft;
+            var y2 = ev.pageY - canvas.offsetTop;
+            vectors.push({
+                x: x2,
+                y: y2
+            });
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+        }
+
+        function mouseupHandler(ev) {
+            // vectors = [];
+            if (vectors.length > 0) {
+                paints.push(vectors);
+                vectors = [];
+            }
+            t1 = Date.now()
+            // var t = Date.now() - t1;
+            // times.push(t);
+            canvas.removeEventListener('mousemove', mousemoveHandler);
+            canvas.removeEventListener('mouseup', mouseupHandler);
+        }
+
+        // function calcWaypoints(vectors) {
+        //     var waypoints = [];
+        //     for (var i = 1; i < vectors.length; i++) {
+        //         var pt0 = vectors[i - 1];
+        //         var pt1 = vectors[i];
+        //         var dx = pt1.x - pt0.x;
+        //         var dy = pt1.y - pt1.y;
+        //         for (var j = 0; j < 2; j++) {
+        //             var x = pt0.x + dx * j / 2;
+        //             var y = pt0.y + dy * j / 2;
+        //             waypoints.push({
+        //                 x: x,
+        //                 y: y
+        //             })
+        //         }
+        //     }
+        //     return waypoints;
+        // }
+
+        function draw(arr) {
+            var timer, t = 1;
+            timer = setInterval(function() {
+                if (t < arr.length - 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(arr[t - 1].x, arr[t - 1].y);
+                    ctx.lineTo(arr[t].x, arr[t].y);
+                    ctx.stroke();
+                    t++;
+                } else {
+                    clearInterval(timer);
+                }
+            }, 1)
+            // requestAnimationFrame(draw);
+        }
+
+        document.getElementById('play').onclick = function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            console.log(times);
+            if (paints.length > 0) {
+                // setTimeout(function() {
+                //     draw(paints[0]);
+                //     setTimeout(function() {
+                //         draw(paints[1]);
+                //         setTimeout(function() {
+                //             draw(paints[2])
+                //         }, 1000)
+                //     }, 1000)
+                // }, 1000);
+                // (function(arr) {
+                //     var i = 1;
+                //     length = arr.length;
+                //     (function a() {
+                //         setTimeout(function() {
+                //             if (i < length)
+                //                 draw(arr[i++]);
+                //             a();
+                //         }, 800);
+                //     }())
+                // }(paints));
+                // draw(paints[0]);
+                // function drawArr(arr) {
+                //     var i = 0, length = arr.length;
+                //     function drawSingle() {
+                //         setTimeout(function() {
+                //             if (i < length) {
+                //                 draw(arr[i]);
+                //                 i++;
+                //             } else {
+                //                 return;
+                //             }
+                //             drawSingle();
+                //         }, 800);
+                //     }
+                //     drawSingle();
+                // }
+                // drawArr(paints);
+                draw(paints[0])
+                function drawArr(arr, intervalArr) {
+                    var i = 1, length = arr.length;
+                    function drawSingle(j) {
+                        // var temp = j;
+                        setTimeout(function() {
+                            if (i < length) {
+                                draw(arr[i]);
+                                i++;
+                            } else {
+                                return;
+                            }
+                            drawSingle(i);
+                        }, intervalArr[j - 1]);
+                    }
+                    drawSingle(i);
+                }
+                drawArr(paints, times);
+            }
+
+        }
+    </script>
+</body>
+
+</html>

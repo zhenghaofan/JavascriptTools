@@ -1,0 +1,9 @@
+使用flex容器内元素，即flex item的float，clear、vertical-align属性将失效
+
+水平垂直居中：
+使用 flex 布局首先要设置父容器 display: flex，然后再设置 justify-content: center 实现水平居中，最后设置 align-items: center 实现垂直居中。
+#dad {
+    display: flex;
+    justify-content: center;
+    align-items: center
+}

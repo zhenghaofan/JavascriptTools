@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>test-erase</title>
+    </head>
+    <body>
+        <div id="container" style="background: url(./img1.jpg) no-repeat; background-size: 100% 100%;width: 100%;position: absolute; left:0;right:0;top:0;bottom:0">
+            <canvas id="canvas"></canvas>
+        </div>
+        <script type="text/javascript">
+            var x1, y1, x2, y2;
+            var width = window.innerWidth;
+            var height = window.outerHeight;
+            var canvas = document.getElementById('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.src = './img2.jpg';
+            img.onload = function(){
+                ctx.drawImage(img, 0, 0, width, height);
+                handleTap();
+            }
+            function handleTap() {
+                var hasTouch = 'ontouchstart' in window ? true : false,
+                tapstart = hasTouch ? 'touchstart': 'mousedown',
+                tapmove = hasTouch ? 'touchmove' : 'mousemove',
+                tapend = hasTouch ? 'touchend' : 'mouseup';
+
+                ctx.lineCap = 'round'; //设置或返回线条的结束端点样式
+                ctx.lineJoin = 'round'; //设置或返回两条线相交时，所创建的拐角类型
+                ctx.lineWidth = 60;
+                ctx.globalCompositeOperation = 'destination-out'; //	在源图像外显示目标图像。只有源图像外的目标图像部分会被显示，源图像是透明的。
+
+                canvas.addEventListener(tapstart, function(e) {
+                    e.preventDefault();
+                    x1 = hasTouch ? e.targetTouches[0].pageX : e.clientX - canvas.offsetLeft;
+                    y1 = hasTouch ? e.targetTouches[0].pageY : e.clientY - canvas.offsetTop;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(x1, y1, 1, 0, 2*Math.PI);
+                    ctx.fill();
+                    ctx.restore();
+
+                    canvas.addEventListener(tapmove, tapmoveHandler);
+                    canvas.addEventListener(tapend, function() {
+                        canvas.removeEventListener(tapmove, tapmoveHandler)
+                    });
+                    function tapmoveHandler(e){
+                        e.preventDefault();
+                        x2 = hasTouch ? e.targetTouches[0].pageX : e.clientX - canvas.offsetLeft;
+                        y2 = hasTouch ? e.targetTouches[0].pageY : e.clientY - canvas.offsetTop;
+
+                        ctx.save();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                        ctx.restore();
+
+                        x1 = x2;
+                        y1 = y2;
+                    }
+                });
+
+            }
+        </script>
+    </body>
+</html>
