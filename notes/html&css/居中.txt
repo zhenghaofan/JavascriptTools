@@ -5,22 +5,66 @@
 分两种情况：
 1.宽度确定的块状元素：通过margin-left,margin-right设置auto实现
 2.宽度不确定的块状元素(如分页导航)3种方法：
-	
+
 	①给父元素设置float，然后给父元素设置 position:relative 和 left:50%，子元素设置 position:relative 和 left:-50% 来实现水平居中。
 
 	②改变块状元素为内联元素(display:inline)，再使用父元素的text-align:center;
+
+	③绝对定位实现水平居中：
+	width:300px;
+    position:absolute;
+    left:50%;
+    margin-left:-150px
 
 
 垂直居中：
 1.父元素高度确定，单行文本：将父元素的height与line-height高度一致
 2.父元素高度确定，多行文本、图片、块状元素2种方法：
-	
+
 	①IE8 以上的浏览器下可以设置块级元素的 display 为 table-cell，激活 vertical-align 属性，但注意 IE6、7 并不支持这个样式。
+	<div class="outer">
+		<div class="inner">多行文本</div>
+	</div>
 
-	②使用table,包含tbody,tr,td标签，同时设置vertical-align:middle；
+	.outer {
+		width: 100%;
+		height: 150px;
+		text-align: center;
+		display:table;
+	}
+	.name {
+    	height: 150px;
+    	width: 150px;
+    	vertical-align:middle;
+    	display:table-cell;
+	}
 
-	③:after+content,使用vertical-align属性：zhangxinxu.com/wordpress/?p=1136
+	②display table-cell
+	<div>
+	<span>测试文字测试文字</span>
+	</div>
+	div{display: table-cell; vertical-align: middle;}
+	span{vertical-align:middle}
 
+	③span inline-block
+
+	父元素（这里是div）设置和高度一致的 line-height （这里是200px）--- 由后面的vertical-align定义看，这是为了设置div的基线;子元素 (这里是span) 设置合适的line-height，并设置display:inline-block、vertical-align: middle;  --- inline水平的元素无法设置line-height。所以这里要设置inline-block。
+
+	<div>
+	<span>测试文字测试文字</span>
+	</div>
+
+	<style>
+		div{
+			height:200px;
+			line-height: 200px;
+		}
+	   	span{
+	   		display: inline-block;
+	   		vertical-align: middle;
+	   		line-height: 22px;
+	   	}
+	</style>
 
 
 水平垂直居中：

@@ -1,0 +1,146 @@
+jQuery 的模块可以分为 3 部分:入口模块、底层支持模块和功能模块
+在构造 jQuery 对象模块中，如果在调用构造函数 jQuery() 创建 jQuery 对象时传入了选 择器表达式，则会调用选择器 Sizzle 遍历文档，查找与之匹配的 DOM 元素，并创建一个包 含了这些 DOM 元素引用的 jQuery 对象。
+
+选择器 Sizzle 是一款纯 JavaScript 实现的 CSS 选择器引擎，用于查找与选择器表达式匹 配的元素集合。
+
+工具方法模块提供了一些编程辅助方法，用于简化对 jQuery 对象、DOM 元素、数组、 对象、字符串等的操作，例如，jQuery.each()、.each()、jQuery.map()、.map() 等，其他所有 的模块都会用到工具方法模块。
+
+浏览器功能测试模块提供了针对不同浏览器功能和 bug 的测试结果，其他模块则基于这 些测试结果来解决浏览器之间的兼容性问题。
+
+在底层支持模块中，回调函数列表模块用于增强对回调函数的管理，支持添加、移除、 触发、锁定、禁用回调函数等功能;异步队列模块用于解耦异步任务和回调函数，它在回调 函数列表的基础上为回调函数增加了状态，并提供了多个回调函数列表，支持传播任意同步或异步回调函数的成功或失败状态;
+
+数据缓存模块用于为 DOM 元素和 JavaScript 对象附加任意类型的数据;队列模块用于管理一组函数，支持函数的入队和出队操作，并确保函数按 顺序执行，它基于数据缓存模块实现。
+
+在功能模块中，事件系统提供了统一的事件绑定、响应、手动触发和移除机制，它并没 有将事件直接绑定到 DOM 元素上，而是基于数据缓存模块来管理事件;Ajax 模块允许从服 务器上加载数据，而不用刷新页面，它基于异步队列模块来管理和触发回调函数;动画模块 用于向网页中添加动画效果，它基于队列模块来管理和执行动画函数;属性操作模块用于对 HTML 属性和 DOM 属性进行读取、设置和移除操作;DOM 遍历模块用于在 DOM 树中遍历 父元素、子元素和兄弟元素;DOM 操作模块用于插入、移除、复制和替换 DOM 元素;样式 操作模块用于获取计算样式或设置内联样式;坐标模块用于读取或设置 DOM 元素的文档坐 标;尺寸模块用于获取 DOM 元素的高度和宽度。
+
+①为什么要创建这样一个自调用匿名函数 ?
+通过创建一个自调用匿名函数，创建了一个特殊的函数作用域，该作用域中的代码不会和已有的同名函数、方法和变量以及第三方库冲突
+
+②为什么要为自调用匿名函数设置参数 window，并传入 window 对象?
+通过传入 window 对象，可以使 window 对象变为局部变量(即把函数参数作为局部 变量使用)，这样当在 jQuery 代码块中访问 window 对象时，不需要将作用域链回退到顶 层作用域，从而可以更快地访问 window 对象，这是原因之一;另外，将 window 对象作 为参数传入，可以在压缩代码时进行优化
+
+③为什么要为自调用匿名函数设置参数 undefined ?
+特殊值 undefined 是 window 对象的一个属性，例如，执行下面的代码将会弹出 true:
+alert( "undefined" in window ); // true
+通 过 把 参 数 undefined 作 为 局 部 变 量 使 用， 但 是 又 不 传 入 任 何 值， 可 以 缩 短 查 找 undefined 时的作用域链，并且可以在压缩代码时进行优化，如前面代码所示，参数 undefined 会被压缩为 b。
+另外，更重要的原因是，通过这种方式可以确保参数 undefined 的值是 undefined，因为 undefiend 有可能会被重写为新的值。
+
+底层：
+选择器 Sizzle
+
+Sizzle 的总体源码结构如代码清单 3-1 所示，为了方便解释，代码中增加了注释:
+代码清单 3-1 Sizzle 的总体源码结构
+(function(){
+// 选择器引擎入口，查找与选择器表达式 selector 匹配的元素集合
+var Sizzle = function( selector, context, results, seed ) { ... }; // 工具方法，排序、去重
+Sizzle.uniqueSort = function( results ) { ... };
+// 便捷方法，使用指定的选择器表达式 expr 对元素集合 set 进行过滤 Sizzle.matches = function( expr, set ) { ... };
+// 便捷方法，检查某个元素 node 是否匹配选择器表达式 expr Sizzle.matchesSelector = function( node, expr )
+// 内部方法，对块表达式进行查找
+Sizzle.find = function( expr, context, isXML ) {
+// 内部方法，用块表达式过滤元素集合
+Sizzle.filter = function( expr, set, inplace, not
+// 工具方法，抛出异常
+Sizzle.error = function( msg ) { ... };
+// 工具方法，获取 DOM 元素集合的文本内容
+var getText = Sizzle.getText = function( elem )
+// 扩展方法和属性
+var Expr = Sizzle.selectors = {
+// 块表达式查找顺序
+order: [ "ID", "NAME", "TAG" ],
+// 正则表达式集，用于匹配和解析块表达式
+match: { ID, CLASS, NAME, ATTR, TAG, CHILD,
+leftMatch: { ... },
+// 属性名修正函数集
+attrMap: { "class", "for" },
+// 属性值读取函数集
+attrHandle: { href, type },
+// 块间关系过滤函数集
+relative: { "+", ">", "", "~" },
+// 块表达式查找函数集
+find: { ID, NAME, TAG },
+// 块表达式预过滤函数集
+preFilter: { CLASS, ID, TAG, CHILD, ATTR, PSEUDO, POS },
+// 伪类过滤函数集
+filters: { enabled, disabled, checked, selected, parent, empty, has, header, text, radio, checkbox, file, password, submit, image, reset, button, input, focus },
+// 位置伪类过滤函数集
+setFilters: { first, last, even, odd, lt, gt, nth, eq },
+// 块表达式过滤函数集
+}; filter: { PSEUDO, CHILD, ID, TAG, CLASS, ATTR, POS }
+// 如果支持方法 querySelectorAll()，则调用该方法查找元素 if ( document.querySelectorAll ) {
+(function(){
+var oldSizzle = Sizzle;
+{ ... }; ... };
+) { ... };
+
+Sizzle = function( query, context, extra, seed ) {
+// 尝试调用方法 querySelectorAll() 查找元素
+// 如果上下文是 document，则直接调用 querySelectorAll() 查找元素
+return makeArray( context.querySelectorAll(query), extra );
+// 如果上下文是元素，则为选择器表达式增加上下文，然后调用 querySelectorAll() // 查找元素
+return makeArray( context.querySelectorAll( "[id='" + nid + "'] " + query ), extra );
+// 如果查找失败，则仍然调用 oldSizzle()
+}; return oldSizzle(query, context, extra, seed);
+})(); }
+// 如果支持方法 matchesSelector()，则调用该方法检查元素是否匹配选择器表达式 (function(){
+var matches = html.matchesSelector
+|| html.mozMatchesSelector
+|| html.webkitMatchesSelector
+|| html.msMatchesSelector; // 如果支持方法 matchesSelector()
+if ( matches ) {
+Sizzle.matchesSelector = function( node, expr ) {
+// 尝试调用方法 matchesSelector()
+var ret = matches.call( node, expr ); return ret;
+// 如果查找失败，则仍然调用 Sizzle()
+}; return Sizzle(expr, null, null, [node]).length > 0;
+} })();
+// 检测浏览器是否支持 getElementsByClassName() (function(){
+Expr.order.splice(1, 0, "CLASS");
+Expr.find.CLASS = function( match, context, isXML ) { ... }; })();
+// 工具方法，检测元素 a 是否包含元素 b
+Sizzle.contains = function( a, b ) { ... }; })();
+代码清单 3-1 中的变量 Expr 与 Sizzle.selectors 指向了同一个对象，这么做是为了减少拼 写字符数、缩短作用域链，并且方便压缩。但是为了直观和避免混淆，本章在描述中统一使 用 Sizzle.selectors。
+代码清单 3-1 中已经介绍了浏览器支持方法 querySelectorAll() 时的查找过程，本章 后面的内容将介绍和分析在不支持的情况下，Sizzle 是如何模拟方法 querySelectorAll() 的行为的。
+
+查找过程：
+第一步按照块间关系符查找元素，
+第二步用块表达式对查找的结果进行过滤。
+不论元素之间是哪种关系(父子关系、祖 先后代关系、相邻的兄弟关系或不相邻的兄弟关系)，都可以采用这种方式来查找和过滤。
+另外，如果还有更多的块表达式，则重复执行第 3 步。
+对于前面的 3 个步骤，可以进一步提炼总结，如下:
+1)处理选择器表达式:解析选择器表达式中的块表达式和块间关系符。
+2)处理块表达式:用块表达式的一部分查找，用剩余部分对查找结果进行过滤。
+3)处理块间关系符:按照块间关系符查找，用块表达式对查找结果进行过滤。
+
+从前面对选择器表达式的执行过程的分析，还可以推导分析出以下结论: 
+从左向右的总体思路是不断缩小上下文，即不断缩小查找范围。 
+从右向左的总体思路是先查找后过滤。 
+在从左向右的查找过程中，每次处理块间关系符时都需要处理未知数量的子元素或后代元素，
+而在从右向左的查找过程中，处理块间关系符时只需要处理单个父元素或有 限数量的祖先元素。
+因此，在大多数情况下，采用从右向左的查找方式其效果要高于 从左向右。
+
+在了解了两种执行思路后，现在再来看看 Sizzle，它是一款从右向左查找的选择器引擎
+
+函数 Sizzle( selector, context, results, seed ) 执行的 6 个关键步骤如下:
+1)解析块表达式和块间关系符。
+
+2)如果存在位置伪类，则从左向右查找:
+a. 查找第一个块表达式匹配的元素集合，得到第一个上下文元素集合。
+b. 遍历剩余的块表达式和块间关系符，不断缩小上下文元素集合。
+
+3)否则从右向左查找:
+a. 查找最后一个块表达式匹配的元素集合，得到候选集、映射集。
+b. 遍历剩余的块表达式和块间关系符，对映射集执行块间关系过滤。
+
+4)根据映射集筛选候选集，将最终匹配的元素放入结果集。
+
+5)如果存在并列选择器表达式，则递归调用 Sizzle( selector, context, results, seed ) 查找
+匹配的元素集合，并合并、排序、去重。
+
+6)最后返回结果集。
+
+
+异步队列 Deferred Object
+数据缓存 Data
+队列 Queue
+浏览器功能测试 Support
