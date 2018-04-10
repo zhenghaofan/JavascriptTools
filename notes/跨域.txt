@@ -1,0 +1,12 @@
+解决跨域问题：
+1.JSONP(只能实现get请求，因为没有存在支持post请求的script标签)
+2.XHR2
+3.服务器代理(nginx反向代理)
+4.跨域脚本API访问, window.postMessage(data,origin)
+5.document.domain + iframe跨域 两个页面都强制设置同一个document.domain
+6.location.hash + iframe
+7.window.name + iframe跨域
+
+Javascript的APIs中，如 iframe.contentWindow, window.parent, window.open 和 window.opener 允许文档间直接相互引用。当两个文档的源不同时，这些引用方式将对 Window 和 Location对象的访问添加限制。
+
+可以使用window.postMessage 作为替代方案，提供跨域文档间的通讯。

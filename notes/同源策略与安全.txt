@@ -150,7 +150,7 @@ X-Content-Security-Policy: allow 'self'; img-src *; media-src media1.com; script
 2.浏览器XSS filter（IE 8）
 当用户访问的URL中包含了XSS攻击的脚本时，IE就会修改其中的关键字使得攻击无法完成，并向用户弹出提示框
 
-3.HttpOnly
+3.HttpOnly防止cookie劫持
 浏览器禁止页面的Javascript访问带有HttpOnly属性的cookie；可以通过添加http-only属性缓解XSS攻击
 
 4.输入检查，手动构造XSS filter

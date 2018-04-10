@@ -1,0 +1,140 @@
+var person = mobx.observable({
+	firstName: 'Matt',
+	lastName: 'Ruby',
+	age: 0,
+
+    //computed:
+    get fullName() {
+        return .....
+    }
+});
+
+mobx.autorun(function auto_firstNameAge () {
+	console.log('autorun: ' + person.firstName + ' ' + person.age);
+});
+
+autorun是观察状态改变的函数，firstName和age改变的时候打印信息，lastName改变的时候不打印
+
+mobx.runInAction(function() {
+    person.age = 10; //非严格模式
+})
+
+runInAction: 立即执行改变state的动作，相当于action(fn)()立即执行
+
+state定义中可以包含action...
+
+严格模式：
+useStrict(true);
+改变观察属性必须加@action/action,否则会保错
+action写法：
+①action(function() {
+
+})
+②action(actionName, function(){})
+③@action 类中的方法classMethod() {}
+④@action(actionName) classMethod() {}
+
+⑤@action boundClassMethod = (args) => {
+    body...
+}
+例子：class Ticker {
+    @observable this.tick = 0
+
+    @action.bound
+    increment() {
+        this.tick ++ ;
+    }
+}
+const ticker = new Ticker()
+setInterval(ticker.increment, 1000)
+
+action 只能影响正在运行的函数，无法影响当前函数调用的异步操作，如果要使用异步操作，需再用一个action
+
+例子：两个组件共享同一state:
+class myStore {
+    @observable num1 = 0;
+    @observable num2 = 10;
+
+    @action addNum1 = () => {
+        this.num1 ++ ;
+    }
+
+    @action addNum2 = () => {
+        this.num2 ++ ;
+    }
+
+    @computed get total () {
+        return this.num1 + this.num2
+    }
+}
+
+const newState = new myStore();
+
+//纯函数组件：
+const AllNum = observer(
+    (props) => (
+        <div>
+            num1+num2=  {props.store.total}
+        </div>
+    )
+)
+
+const Main = observer(
+    (props) => (
+        <div>
+            <p>num1 = {props.store.num1}</p>
+        </div>
+        <div>
+            <button onClick={props.store.addNum1}>num1 + 1</button>
+        </div>
+    )
+)
+
+@observer //相当于ES5的observer(class....),通过mobx.autorun来包装组件的render函数，使得组件的render在数据变更时强制重新渲染
+export default class App extends React.Component{
+    render() {
+        return (
+            <div>
+                <Main store={newState}/>
+                <AllNum store={newState}/>
+            </div>
+        )
+    }
+
+}
+
+包含异步操作的情况，使用runInAction
+useStrict(true);
+class MyState {
+    @observable data = null;
+    @action initData = async() => {
+        const data = await getData('.....')
+        runInAction('说明这个action的行为，不写也行', () => {
+            this.data = data;
+        })
+    }
+}
+
+
+Provider组件：
+const color = observable({background: "#fff", foreground:"#000"})
+const App = () =>
+<Provider colors={color}>
+    <app .../>
+</Provider>
+
+//使用inject
+const Button = inject('colors')(observer(
+    ({color, label, onClick}) => {
+        <button style={{color: color.foreground}}>aaa</button>
+    }
+))
+
+color.foreground = 'blue' //all buttons updated
+
+reaction():
+autorun 的变种，对于如何追踪 observable 赋予了更细粒度的控制。 它接收两个函数参数，第一个(数据 函数)是用来追踪并返回数据作为第二个函数(效果 函数)的输入。 不同于 autorun 的是当创建时效果 函数不会直接运行，只有在数据表达式首次返回一个新值后才会运行。 在执行 效果 函数时访问的任何 observable 都不会被追踪。
+
+效果 函数是可以去抖的，就像 autorunAsync。 reaction 返回一个清理函数。 传入 reaction 的函数当调用时会接收两个参数，即当前的 reaction，可以用来在执行期间进行清理。
+
+值得注意的是 效果 函数仅对数据函数中访问的数据作出反应，这可能会比实际在效果函数使用的数据要少。

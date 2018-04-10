@@ -68,7 +68,14 @@
 
 
 水平垂直居中：
-①元素position：absolute，left,right,top,bottom都为0，margin设为auto
+①父级定高宽，position设为relative, 子元素position：absolute，left,right,top,bottom都为0，margin设为auto
+
+②父级定高宽， 子元素设置：
+position: relative;
+top: 50%;
+left: 50%;
+/*translate(-50%,-50%) 偏移自身的宽和高的-50%*/
+transform: translate(-50%, -50%);
 
 inline-block元素化：
 
